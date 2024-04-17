@@ -80,7 +80,7 @@ typedef struct
  * @return APR_EDSOOPEN if DSO driver file can't be opened
  * @return APR_ESYMNOTFOUND if the driver file doesn't contain a driver
  */
-APR_DECLARE(apr_status_t) apr_dbm_get_driver(const apr_dbm_driver_t **driver,
+APU_DECLARE(apr_status_t) apr_dbm_get_driver(const apr_dbm_driver_t **driver,
         const char *name, const apu_err_t **result, apr_pool_t *pool);
 
 /**
@@ -133,7 +133,7 @@ APU_DECLARE(apr_status_t) apr_dbm_open_ex(apr_dbm_t **dbm, const char* type,
  * @remark The dbm name may not be a true file name, as many dbm packages
  * append suffixes for separate data and index files.
  */
-APR_DECLARE(apr_status_t) apr_dbm_open2(apr_dbm_t **pdb,
+APU_DECLARE(apr_status_t) apr_dbm_open2(apr_dbm_t **pdb,
                                         const apr_dbm_driver_t *driver,
                                         const char *name, apr_int32_t mode,
                                         apr_fileperms_t perm, apr_pool_t *pool);
