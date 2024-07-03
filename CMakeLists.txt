@@ -15,9 +15,11 @@
 #
 # Read README.cmake before using this.
 
-PROJECT(APR-Util C)
-
+# CMAKE_MINIMUM_REQUIRED should be the first directive in the file:
+# https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(APR-Util C)
 
 FIND_PACKAGE(EXPAT)
 FIND_PACKAGE(LibXml2)
