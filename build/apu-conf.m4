@@ -274,6 +274,8 @@ if test "$apu_has_ldap_openldap" = "1"; then
     LIBS="$save_libs"
 fi
 
+AC_CHECK_HEADERS([sasl.h sasl/sasl.h])
+
 AC_SUBST(ldap_h)
 AC_SUBST(lber_h)
 AC_SUBST(ldap_ssl_h)

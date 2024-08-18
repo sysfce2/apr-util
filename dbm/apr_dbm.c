@@ -203,7 +203,7 @@ APU_DECLARE(apr_status_t) apr_dbm_get_driver(const apr_dbm_driver_t **vtable,
 #endif
     apr_snprintf(symname, sizeof(symname), "apr_dbm_type_%s", type);
 
-    rv = apu_dso_load(&dso, &symbol, modname, symname, pool);
+    rv = apu_dso_load(&dso, &symbol, modname, symname, pool, NULL);
     if (rv == APR_SUCCESS || rv == APR_EINIT) { /* previously loaded?!? */
         *vtable = symbol;
         if (usertype)

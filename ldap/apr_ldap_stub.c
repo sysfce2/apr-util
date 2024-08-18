@@ -19,6 +19,7 @@
 #include "apu_config.h"
 #include "apr_ldap.h"
 #include "apu_internal.h"
+#include "apr_atomic.h"
 #include "apr_dso.h"
 #include "apr_errno.h"
 #include "apr_pools.h"
@@ -29,9 +30,35 @@
 
 #if APU_DSO_BUILD
 
+static apr_pool_t *global;
 static struct apr__ldap_dso_fntable *lfn = NULL;
+static apr_uint32_t in_init = 0, initialised = 0;
 
-static apr_status_t load_ldap(apr_pool_t *pool)
+static apr_status_t apr_ldap_term(void *ptr)
+{
+    if (apr_atomic_inc32(&in_init)) {
+        while (apr_atomic_read32(&in_init) > 1); /* wait until we get fully inited */
+    }
+
+    /* Reference count - cleanup when last reference is cleaned up */
+    if (!apr_atomic_dec32(&initialised)) {
+
+        apr_pool_destroy(global);
+
+        /* set statics to NULL so init can work again */
+        global = NULL;
+        lfn = NULL;
+    }
+
+    apr_atomic_dec32(&in_init);
+
+    /* Everything else we need is handled by cleanups registered
+     * when we created mutexes and loaded DSOs
+     */
+    return APR_SUCCESS;
+}
+
+static apr_status_t load_ldap(apr_pool_t *pool, const apr_ldap_driver_t **driver, apu_err_t *err)
 {
     char *modname;
     apr_dso_handle_sym_t symbol;
@@ -46,27 +73,65 @@ static apr_status_t load_ldap(apr_pool_t *pool)
     }
 
 #if defined(WIN32)
-    modname = "apr_ldap-" APU_STRINGIFY(APU_MAJOR_VERSION) ".dll";
+    modname = "apr_ldap-" APR_STRINGIFY(APR_MAJOR_VERSION) ".dll";
 #else
-    modname = "apr_ldap-" APU_STRINGIFY(APU_MAJOR_VERSION) ".so";
+    modname = "apr_ldap-" APR_STRINGIFY(APR_MAJOR_VERSION) ".so";
 #endif
-    rv = apu_dso_load(NULL, &symbol, modname, "apr__ldap_fns", pool);
+    rv = apu_dso_load(NULL, &symbol, modname, "apr__ldap_fns", pool, err);
     if (rv == APR_SUCCESS) {
         lfn = symbol;
     }
+
+    if (driver) {
+        *driver = (apr_ldap_driver_t *)lfn;
+    }
+
     apu_dso_mutex_unlock();
 
     return rv;
 }
 
-#define LOAD_LDAP_STUB(pool, failres) \
-    if (!lfn && (load_ldap(pool) != APR_SUCCESS)) \
+#define LOAD_LDAP_STUB(pool, err, failres) \
+    if (!lfn && (apr_ldap_get_driver(pool, NULL, err) != APR_SUCCESS)) \
         return failres;
+
+#define CHECK_LDAP_STUB(failres) \
+    if (!lfn) \
+        return failres;
+
+APR_DECLARE(apr_status_t) apr_ldap_get_driver(apr_pool_t *pool,
+                                              const apr_ldap_driver_t **driver,
+                                              apu_err_t *err)
+{
+    apr_status_t status = APR_EREINIT;
+
+    if (apr_atomic_inc32(&in_init)) {
+        while (apr_atomic_read32(&in_init) > 1); /* wait until we get fully inited */
+    }
+
+    /* Reference count increment... */
+    if (!apr_atomic_inc32(&initialised)) {
+
+        apr_pool_create_unmanaged(&global);
+
+        status = load_ldap(global, driver, err);
+
+    }
+
+    apr_pool_cleanup_register(pool, NULL, apr_ldap_term,
+                              apr_pool_cleanup_null);
+
+    apr_atomic_dec32(&in_init);
+
+    return status;
+}
+
+/* Legacy API */
 
 APU_DECLARE_LDAP(int) apr_ldap_info(apr_pool_t *pool,
                                     apr_ldap_err_t **result_err)
 {
-    LOAD_LDAP_STUB(pool, -1);
+    LOAD_LDAP_STUB(pool, NULL, -1);
     return lfn->info(pool, result_err);
 }
 
@@ -77,7 +142,7 @@ APU_DECLARE_LDAP(int) apr_ldap_init(apr_pool_t *pool,
                                     int secure,
                                     apr_ldap_err_t **result_err)
 {
-    LOAD_LDAP_STUB(pool, -1);
+    LOAD_LDAP_STUB(pool, NULL, -1);
     return lfn->init(pool, ldap, hostname, portno, secure, result_err);
 }
 
@@ -86,7 +151,7 @@ APU_DECLARE_LDAP(int) apr_ldap_ssl_init(apr_pool_t *pool,
                                         int cert_file_type,
                                         apr_ldap_err_t **result_err)
 {
-    LOAD_LDAP_STUB(pool, -1);
+    LOAD_LDAP_STUB(pool, NULL, -1);
     return lfn->ssl_init(pool, cert_auth_file, cert_file_type, result_err);
 }
 
@@ -103,7 +168,7 @@ APU_DECLARE_LDAP(int) apr_ldap_get_option(apr_pool_t *pool,
                                           void *outvalue,
                                           apr_ldap_err_t **result_err)
 {
-    LOAD_LDAP_STUB(pool, -1);
+    LOAD_LDAP_STUB(pool, NULL, -1);
     return lfn->get_option(pool, ldap, option, outvalue, result_err);
 }
 
@@ -113,13 +178,13 @@ APU_DECLARE_LDAP(int) apr_ldap_set_option(apr_pool_t *pool,
                                           const void *invalue,
                                           apr_ldap_err_t **result_err)
 {
-    LOAD_LDAP_STUB(pool, -1);
+    LOAD_LDAP_STUB(pool, NULL, -1);
     return lfn->set_option(pool, ldap, option, invalue, result_err);
 }
 
 APU_DECLARE_LDAP(apr_status_t) apr_ldap_rebind_init(apr_pool_t *pool)
 {
-    LOAD_LDAP_STUB(pool, APR_EGENERAL);
+    LOAD_LDAP_STUB(pool, NULL, APR_EGENERAL);
     return lfn->rebind_init(pool);
 }
 
@@ -128,7 +193,7 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_rebind_add(apr_pool_t *pool,
                                                    const char *bindDN,
                                                    const char *bindPW)
 {
-    LOAD_LDAP_STUB(pool, APR_EGENERAL);
+    LOAD_LDAP_STUB(pool, NULL, APR_EGENERAL);
     return lfn->rebind_add(pool, ld, bindDN, bindPW);
 }
 
@@ -138,6 +203,140 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_rebind_remove(LDAP *ld)
         return APR_EGENERAL;
     return lfn->rebind_remove(ld);
 }
+
+/* Current API */
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_initialise(apr_pool_t *pool,
+                                                   apr_ldap_t **ldap,
+                                                   apu_err_t *err)
+{
+    LOAD_LDAP_STUB(pool, err, APR_EINIT);
+    return lfn->initialise(pool, ldap, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_option_get(apr_pool_t *pool,
+                                                   apr_ldap_t *ldap,
+                                                   int option,
+                                                   apr_ldap_opt_t *outvalue,
+                                                   apu_err_t *err)
+{
+    LOAD_LDAP_STUB(pool, err, APR_EINIT);
+    return lfn->option_get(pool, ldap, option, outvalue, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_option_set(apr_pool_t *pool,
+                                                   apr_ldap_t *ldap,
+                                                   int option,
+                                                   const apr_ldap_opt_t *invalue,
+                                                   apu_err_t *err)
+{
+    LOAD_LDAP_STUB(pool, err, APR_EINIT);
+    return lfn->option_set(pool, ldap, option, invalue, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_connect(apr_pool_t *pool,
+                                                apr_ldap_t *ldap,
+                                                apr_interval_time_t timeout,
+                                                apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->connect(pool, ldap, timeout, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_prepare(apr_pool_t *pool,
+                                                apr_ldap_t *ldap,
+                                                apr_ldap_prepare_cb prepare_cb,
+                                                void *prepare_ctx)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->prepare(pool, ldap, prepare_cb, prepare_ctx);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_process(apr_pool_t *pool,
+                                                apr_ldap_t *ldap,
+                                                apr_interval_time_t timeout,
+                                                apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->process(pool, ldap, timeout, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_result(apr_pool_t *pool,
+                                               apr_ldap_t *ldap,
+                                               apr_interval_time_t timeout,
+                                               apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->result(pool, ldap, timeout, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_poll(apr_pool_t *pool,
+                                             apr_ldap_t *ldap,
+                                             apr_pollcb_t *poll,
+                                             apr_interval_time_t timeout,
+                                             apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->poll(pool, ldap, poll, timeout, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_bind(apr_pool_t *pool,
+                                             apr_ldap_t *ldap,
+                                             const char *mech,
+                                             apr_ldap_bind_interact_cb *interact_cb,
+                                             void *interact_ctx,
+                                             apr_interval_time_t timeout,
+                                             apr_ldap_bind_cb bind_cb, void *bind_ctx,
+                                             apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->bind(pool, ldap, mech, interact_cb, interact_ctx, timeout, bind_cb, bind_ctx, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_compare(apr_pool_t *pool,
+                                                apr_ldap_t *ldap,
+                                                const char *dn,
+                                                const char *attr,
+                                                const apr_buffer_t *bval,
+                                                apr_ldap_control_t **serverctrls,
+                                                apr_ldap_control_t **clientctrls,
+                                                apr_interval_time_t timeout,
+                                                apr_ldap_compare_cb compare_cb, void *ctx,
+                                                apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->compare(pool, ldap, dn, attr, bval, serverctrls, clientctrls, timeout, compare_cb, ctx, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_search(apr_pool_t *pool,
+                                               apr_ldap_t *ldap,
+                                               const char *dn,
+                                               apr_ldap_search_scope_e scope,
+                                               const char *filter,
+                                               const char **attrs,
+                                               apr_ldap_switch_e attrsonly,
+                                               apr_ldap_control_t **serverctrls,
+                                               apr_ldap_control_t **clientctrls,
+                                               apr_interval_time_t timeout,
+                                               apr_ssize_t sizelimit,
+                                               apr_ldap_search_result_cb search_result_cb,
+                                               apr_ldap_search_entry_cb search_entry_cb,
+                                               void *search_ctx,
+                                               apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->search(pool, ldap, dn, scope, filter, attrs, attrsonly, serverctrls, clientctrls, timeout, sizelimit, search_result_cb, search_entry_cb, search_ctx, err);
+}
+
+APU_DECLARE_LDAP(apr_status_t) apr_ldap_unbind(apr_ldap_t *ldap,
+                                               apr_ldap_control_t **serverctrls,
+                                               apr_ldap_control_t **clientctrls,
+                                               apu_err_t *err)
+{
+    CHECK_LDAP_STUB(APR_EINIT);
+    return lfn->unbind(ldap, serverctrls, clientctrls, err);
+}
+
 
 #endif /* APU_DSO_BUILD */
 

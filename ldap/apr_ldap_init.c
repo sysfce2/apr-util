@@ -219,6 +219,7 @@ APU_DECLARE_LDAP(int) apr_ldap_info(apr_pool_t *pool,
  * See include/private/apu_internal.h for the corresponding declarations
  */
 APU_MODULE_DECLARE_DATA struct apr__ldap_dso_fntable apr__ldap_fns = {
+    /* legacy api */
     apr_ldap_info,
     apr_ldap_init,
     apr_ldap_ssl_init,
@@ -227,7 +228,20 @@ APU_MODULE_DECLARE_DATA struct apr__ldap_dso_fntable apr__ldap_fns = {
     apr_ldap_set_option,
     apr_ldap_rebind_init,
     apr_ldap_rebind_add,
-    apr_ldap_rebind_remove
+    apr_ldap_rebind_remove,
+    /* current api */
+    apr_ldap_initialise,
+    apr_ldap_option_get,
+    apr_ldap_option_set,
+    apr_ldap_connect,
+    apr_ldap_prepare,
+    apr_ldap_process,
+    apr_ldap_result,
+    apr_ldap_poll,
+    apr_ldap_bind,
+    apr_ldap_compare,
+    apr_ldap_search,
+    apr_ldap_unbind
 };
 
 #endif /* APU_DSO_BUILD */

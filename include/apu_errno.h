@@ -54,6 +54,23 @@ extern "C" {
  * APR_EINITENGINE    The engine could not be initialised
  * APR_EREINIT        Underlying crypto has already been initialised
  * APR_ENOVERIFY      The signature verification failed
+ * APR_SERVER_DOWN    The server is down
+ * APR_AUTH_UNKNOWN   Unknown SASL mechanism 
+ * APR_PROXY_AUTH     Proxy authorization has failed
+ * APR_INAPPROPRIATE_AUTH  Authentication not appropriate for this entry
+ * APR_INVALID_CREDENTIALS Invalid credentials were presented
+ * APR_INSUFFICIENT_ACCESS The user has insufficient access
+ * APR_INSUFFICIENT_RIGHTS The user has insufficient rights
+ * APR_CONSTRAINT_VIOLATION A constraint was violated
+ * APR_FILTER_ERROR   The filter was malformed
+ * APR_NO_SUCH_OBJECT The object does not exist
+ * APR_NO_SUCH_ATTRIBUTE The attribute does not exist
+ * APR_COMPARE_TRUE   The comparison returned true
+ * APR_COMPARE_FALSE  The comparison returned false
+ * APR_NO_RESULTS_RETURNED No results were returned
+ * APR_WANT_READ      Call me again when the socket is ready for reading
+ * APR_WANT_WRITE     Call me again when the socket is ready for writing
+ * APR_USER_CANCELLED User has cancelled the request
  * </PRE>
  *
  * <PRE>
@@ -88,6 +105,40 @@ extern "C" {
 #define APR_EREINIT          (APR_UTIL_START_STATUS + 12)
 /** @see APR_STATUS_IS_ENOVERIFY */
 #define APR_ENOVERIFY        (APR_UTIL_START_STATUS + 13)
+/** @see APR_STATUS_IS_SERVER_DOWN */
+#define APR_SERVER_DOWN                (APR_UTIL_START_STATUS + 101)
+/** @see APR_STATUS_IS_AUTH_UNKNOWN */
+#define APR_AUTH_UNKNOWN               (APR_UTIL_START_STATUS + 102)
+/** @see APR_STATUS_IS_PROXY_AUTH */
+#define APR_PROXY_AUTH                 (APR_UTIL_START_STATUS + 103)
+/** @see APR_STATUS_IS_INAPPROPRIATE_AUTH */
+#define APR_INAPPROPRIATE_AUTH         (APR_UTIL_START_STATUS + 104)
+/** @see APR_STATUS_IS_INVALID_CREDENTIALS */
+#define APR_INVALID_CREDENTIALS        (APR_UTIL_START_STATUS + 105)
+/** @see APR_STATUS_IS_INSUFFICIENT_ACCESS */
+#define APR_INSUFFICIENT_ACCESS        (APR_UTIL_START_STATUS + 106)
+/** @see APR_STATUS_IS_INSUFFICIENT_RIGHTS */
+#define APR_INSUFFICIENT_RIGHTS        (APR_UTIL_START_STATUS + 107)
+/** @see APR_STATUS_IS_CONSTRAINT_VIOLATION */
+#define APR_CONSTRAINT_VIOLATION       (APR_UTIL_START_STATUS + 108)
+/** @see APR_STATUS_IS_FILTER_ERROR */
+#define APR_FILTER_ERROR               (APR_UTIL_START_STATUS + 109)
+/** @see APR_STATUS_IS_NO_SUCH_OBJECT */
+#define APR_NO_SUCH_OBJECT             (APR_UTIL_START_STATUS + 110)
+/** @see APR_STATUS_IS_NO_SUCH_ATTRIBUTE */
+#define APR_NO_SUCH_ATTRIBUTE          (APR_UTIL_START_STATUS + 111)
+/** @see APR_STATUS_IS_COMPARE_TRUE */
+#define APR_COMPARE_TRUE               (APR_UTIL_START_STATUS + 112)
+/** @see APR_STATUS_IS_COMPARE_FALSE */
+#define APR_COMPARE_FALSE              (APR_UTIL_START_STATUS + 113)
+/** @see APR_STATUS_IS_NO_RESULTS_RETURNED */
+#define APR_NO_RESULTS_RETURNED        (APR_UTIL_START_STATUS + 114)
+/** @see APR_STATUS_IS_WANT_READ */
+#define APR_WANT_READ                  (APR_UTIL_START_STATUS + 115)
+/** @see APR_STATUS_IS_WANT_WRITE */
+#define APR_WANT_WRITE                 (APR_UTIL_START_STATUS + 116)
+/** @see APR_STATUS_IS_USER_CANCELLED */
+#define APR_USER_CANCELLED             (APR_UTIL_START_STATUS + 117)
 /** @} */
 
 /**
@@ -160,6 +211,75 @@ extern "C" {
  * The signature verification failed
  */
 #define APR_STATUS_IS_ENOVERIFY(s)        ((s) == APR_ENOVERIFY)
+/**
+ * The server is down
+ */
+#define APR_STATUS_IS_SERVER_DOWN(s)        ((s) == APR_SERVER_DOWN)
+/**
+ * Authentication mechanism not supoorted by this server
+ */
+#define APR_STATUS_IS_AUTH_UNKNOWN(s)        ((s) == APR_AUTH_UNKNOWN)
+/**
+ * Proxy authorization has failed
+ */
+#define APR_STATUS_IS_PROXY_AUTH(s)        ((s) == APR_PROXY_AUTH)
+/**
+ * Inappropriate authentication was specified (e.g., simple auth
+ * was specified but the entry does not have a userPassword attribute).
+ */
+#define APR_STATUS_IS_INAPPROPRIATE_AUTH(s)        ((s) == APR_INAPPROPRIATE_AUTH)
+/**
+ * Invalid credentials were presented (e.g., the wrong password).
+ */
+#define APR_STATUS_IS_INVALID_CREDENTIALS(s)        ((s) == APR_INVALID_CREDENTIALS)
+/**
+ * The user has insufficient access to perform the operation.
+ */
+#define APR_STATUS_IS_INSUFFICIENT_ACCESS(s)        ((s) == APR_INSUFFICIENT_ACCESS)
+/**
+ * The user has insufficient rights to perform the operation.
+ */
+#define APR_STATUS_IS_INSUFFICIENT_RIGHTS(s)        ((s) == APR_INSUFFICIENT_RIGHTS)
+/**
+ * A constraint was violated.
+ */
+#define APR_STATUS_IS_CONSTRAINT_VIOLATION(s)        ((s) == APR_CONSTRAINT_VIOLATION)
+/**
+ * The filter was malformed.
+ */
+#define APR_STATUS_IS_FILTER_ERROR(s)        ((s) == APR_FILTER_ERROR)
+/**
+ * No such object.
+ */
+#define APR_STATUS_IS_NO_SUCH_OBJECT(s)        ((s) == APR_NO_SUCH_OBJECT)
+/**
+ * No such attribute.
+ */
+#define APR_STATUS_IS_NO_SUCH_ATTRIBUTE(s)        ((s) == APR_NO_SUCH_ATTRIBUTE)
+/**
+ * Comparison is true.
+ */
+#define APR_STATUS_IS_COMPARE_TRUE(s)        ((s) == APR_COMPARE_TRUE)
+/**
+ * Comparison is false.
+ */
+#define APR_STATUS_IS_COMPARE_FALSE(s)        ((s) == APR_COMPARE_FALSE)
+/**
+ * No results were returned.
+ */
+#define APR_STATUS_IS_NO_RESULTS_RETURNED(s)        ((s) == APR_NO_RESULTS_RETURNED)
+/**
+ * Call us back when the socket is ready for a read.
+ */
+#define APR_STATUS_IS_WANT_READ(s)        ((s) == APR_WANT_READ)
+/**
+ * Call us back when the socket is ready for a write.
+ */
+#define APR_STATUS_IS_WANT_WRITE(s)        ((s) == APR_WANT_WRITE)
+/**
+ * User has cancelled the request.
+ */
+#define APR_STATUS_IS_USER_CANCELLED(s)        ((s) == APR_USER_CANCELLED)
 /** @} */
 
 /**
@@ -193,6 +313,16 @@ APU_DECLARE_NONSTD(apu_err_t *) apr_errprintf(apu_err_t *result,
         apr_pool_t *p, const char *reason, int rc, const char *fmt, ...)
         __attribute__((format(printf,5,6)))
         __attribute__((nonnull(2)));
+
+/**
+ * Return a human readable string describing the specified error.
+ * @param statcode The error code to get a string for.
+ * @param buf A buffer to hold the error string.
+ * @param bufsize Size of the buffer to hold the string.
+ */
+APU_DECLARE(char *) apu_strerror(apr_status_t statcode, char *buf,
+                                 apr_size_t bufsize);
+
 
 /** @} */
 

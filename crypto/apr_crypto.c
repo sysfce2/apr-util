@@ -258,7 +258,7 @@ APU_DECLARE(apr_status_t) apr_crypto_get_driver(
             "apr_crypto_%s-" APU_STRINGIFY(APU_MAJOR_VERSION) ".so", name);
 #endif
     apr_snprintf(symname, sizeof(symname), "apr_crypto_%s_driver", name);
-    rv = apu_dso_load(&dso, &symbol, modname, symname, rootp);
+    rv = apu_dso_load(&dso, &symbol, modname, symname, rootp, NULL);
     if (rv == APR_SUCCESS || rv == APR_EINIT) { /* previously loaded?!? */
         apr_crypto_driver_t *d = symbol;
         rv = APR_SUCCESS;

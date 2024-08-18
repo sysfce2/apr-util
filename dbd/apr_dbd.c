@@ -191,7 +191,7 @@ APU_DECLARE(apr_status_t) apr_dbd_get_driver(apr_pool_t *pool, const char *name,
                  "apr_dbd_%s-" APU_STRINGIFY(APU_MAJOR_VERSION) ".so", name);
 #endif
     apr_snprintf(symname, sizeof(symname), "apr_dbd_%s_driver", name);
-    rv = apu_dso_load(NULL, &symbol, modname, symname, pool);
+    rv = apu_dso_load(NULL, &symbol, modname, symname, pool, NULL);
     if (rv == APR_SUCCESS || rv == APR_EINIT) { /* previously loaded?!? */
         *driver = symbol;
         name = apr_pstrdup(pool, name);

@@ -17,6 +17,7 @@
 #include "apr.h"
 #include "apr_dso.h"
 #include "apu.h"
+#include "apu_errno.h"
 
 #ifndef APU_INTERNAL_H
 #define APU_INTERNAL_H
@@ -38,13 +39,14 @@ apr_status_t apu_dso_mutex_lock(void);
 apr_status_t apu_dso_mutex_unlock(void);
 
 apr_status_t apu_dso_load(apr_dso_handle_t **dso, apr_dso_handle_sym_t *dsoptr, const char *module,
-                          const char *modsym, apr_pool_t *pool);
+                          const char *modsym, apr_pool_t *pool, apu_err_t *err);
 
 #if APR_HAS_LDAP
 
 /* For LDAP internal builds, wrap our LDAP namespace */
 
 struct apr__ldap_dso_fntable {
+    /* legacy API */
     int (*info)(apr_pool_t *pool, apr_ldap_err_t **result_err);
     int (*init)(apr_pool_t *pool, LDAP **ldap, const char *hostname,
                 int portno, int secure, apr_ldap_err_t **result_err);
@@ -59,6 +61,47 @@ struct apr__ldap_dso_fntable {
     apr_status_t (*rebind_add)(apr_pool_t *pool, LDAP *ld,
                                const char *bindDN, const char *bindPW);
     apr_status_t (*rebind_remove)(LDAP *ld);
+    /* current API */
+    apr_status_t (*initialise)(apr_pool_t *pool, apr_ldap_t **ldap,
+                               apu_err_t *err);
+    apr_status_t (*option_get)(apr_pool_t *pool, apr_ldap_t *ldap, int option,
+                               apr_ldap_opt_t *outvalue, apu_err_t *err);
+    apr_status_t (*option_set)(apr_pool_t *pool, apr_ldap_t *ldap, int option,
+                               const apr_ldap_opt_t *invalue, apu_err_t *err);
+    apr_status_t (*connect)(apr_pool_t *pool, apr_ldap_t *ldap,
+                            apr_interval_time_t timeout, apu_err_t *err);
+    apr_status_t (*prepare)(apr_pool_t *pool, apr_ldap_t *ldap,
+                            apr_ldap_prepare_cb prepare_cb,
+                            void *prepare_ctx);
+    apr_status_t (*process)(apr_pool_t *pool, apr_ldap_t *ldap,
+                            apr_interval_time_t timeout, apu_err_t *err);
+    apr_status_t (*result)(apr_pool_t *pool, apr_ldap_t *ldap,
+                           apr_interval_time_t timeout, apu_err_t *err);
+    apr_status_t (*poll)(apr_pool_t *pool, apr_ldap_t *ldap, apr_pollcb_t *poll,
+                         apr_interval_time_t timeout, apu_err_t *err);
+    apr_status_t (*bind)(apr_pool_t *pool, apr_ldap_t *ldap,
+                         const char *mech, apr_ldap_bind_interact_cb *interact_cb,
+                         void *interact_ctx, apr_interval_time_t timeout,
+                         apr_ldap_bind_cb bind_cb, void *bind_ctx,
+                         apu_err_t *err);
+    apr_status_t (*compare)(apr_pool_t *pool, apr_ldap_t *ldap,
+                            const char *dn, const char *attr,
+                            const apr_buffer_t *bval,
+                            apr_ldap_control_t **serverctrls,
+                            apr_ldap_control_t **clientctrls,
+                            apr_interval_time_t timeout,
+                            apr_ldap_compare_cb compare_cb, void *ctx, apu_err_t *err);
+    apr_status_t (*search)(apr_pool_t *pool, apr_ldap_t *ldap, const char *dn,
+                           apr_ldap_search_scope_e scope, const char *filter,
+                           const char **attrs, apr_ldap_switch_e attrsonly,
+                           apr_ldap_control_t **serverctrls,
+                           apr_ldap_control_t **clientctrls,
+                           apr_interval_time_t timeout, apr_ssize_t sizelimit,
+                           apr_ldap_search_result_cb search_result_cb,          
+                           apr_ldap_search_entry_cb search_entry_cb,                                          
+                           void *search_ctx, apu_err_t *err);
+    apr_status_t (*unbind)(apr_ldap_t *ldap, apr_ldap_control_t **serverctrls,
+                           apr_ldap_control_t **clientctrls, apu_err_t *err);
 };
 
 #endif /* APR_HAS_LDAP */

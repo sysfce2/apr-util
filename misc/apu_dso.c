@@ -132,7 +132,8 @@ apr_status_t apu_dso_load(apr_dso_handle_t **dlhandleptr,
                           apr_dso_handle_sym_t *dsoptr,
                           const char *module,
                           const char *modsym,
-                          apr_pool_t *pool)
+                          apr_pool_t *pool,
+                          apu_err_t *err)
 {
     apr_dso_handle_t *dlhandle = NULL;
     char *pathlist;
@@ -215,11 +216,20 @@ apr_status_t apu_dso_load(apr_dso_handle_t **dlhandleptr,
         }
     }
 
-    if (rv != APR_SUCCESS) /* APR_ESYMNOTFOUND */
+    if (rv != APR_SUCCESS) { /* APR_ESYMNOTFOUND */
+        if (err) {
+            err->msg = apr_pstrdup(pool, apr_dso_error(dlhandle, NULL, 0));
+            err->reason = apr_pstrdup(pool, module);
+        }
         return rv;
+    }
 
     rv = apr_dso_sym(dsoptr, dlhandle, modsym);
     if (rv != APR_SUCCESS) { /* APR_ESYMNOTFOUND */
+        if (err) {
+            err->msg = apr_pstrdup(pool, apr_dso_error(dlhandle, NULL, 0));
+            err->reason = apr_pstrdup(pool, module);
+        }
         apr_dso_unload(dlhandle);
     }
     else {
