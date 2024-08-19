@@ -1792,6 +1792,7 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_poll(apr_pool_t *pool,
 
 
 
+#if APR_HAS_OPENLDAP_LDAPSDK
 
 typedef struct apr_ldap_bind_ctx_t {
     apr_ldap_t *ld;
@@ -1841,6 +1842,8 @@ static int bind_sasl_interact(LDAP *ld, unsigned flags, void *ctx, void *in)
 
     return LDAP_SUCCESS;
 }
+
+#endif
 
 
 /**
