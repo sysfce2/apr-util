@@ -1,6 +1,10 @@
                                                      -*- coding: utf-8 -*-
 Changes with APR-util 1.7.0
 
+  *) apr_ldap: Explicitly detect the case where OpenLDAP has been
+     installed with SASL support, but the SASL headers are missing.
+     [Graham Leggett]
+
   *) apr_ldap: Add the new APR LDAP API. [Graham Leggett]
 
   *) apr_buffer: Add the apr_buffer API. [Graham Leggett]

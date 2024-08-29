@@ -1792,7 +1792,11 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_poll(apr_pool_t *pool,
 
 
 
-#if APR_HAS_OPENLDAP_LDAPSDK
+#if APR_HAS_OPENLDAP_LDAPSDK && APR_HAS_LDAP_SASL_INTERACTIVE_BIND
+
+#if !defined(HAVE_SASL_H) && !defined(HAVE_SASL_SASL_H)
+#error OpenLDAP was built with SASL support, but the SASL headers are not installed as required.
+#endif
 
 typedef struct apr_ldap_bind_ctx_t {
     apr_ldap_t *ld;
@@ -1989,7 +1993,7 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_bind(apr_pool_t *pool, apr_ldap_t *ldap,
     }
     else {
 
-#if APR_HAS_OPENLDAP_LDAPSDK
+#if APR_HAS_OPENLDAP_LDAPSDK && APR_HAS_LDAP_SASL_INTERACTIVE_BIND
 
         const char *rmech;
 
