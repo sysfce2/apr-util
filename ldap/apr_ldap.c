@@ -708,9 +708,16 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_option_get(apr_pool_t *pool, apr_ldap_t 
     }
     case APR_LDAP_OPT_DEBUG_LEVEL: {
 
+#if defined(LDAP_OPT_DEBUG_LEVEL)
         rc = ldap_get_option(ldap ? ldap->ld : NULL, LDAP_OPT_DEBUG_LEVEL, &outvalue->debug);
 
         break;
+#else
+        result->reason = "LDAP: Debug level not yet supported by APR on this "
+                         "LDAP SDK";
+        result->rc = LDAP_UNWILLING_TO_PERFORM;
+        return APR_ENOTIMPL;
+#endif
     }
     case APR_LDAP_OPT_DEREF: {
 
@@ -903,8 +910,15 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_option_set(apr_pool_t *pool, apr_ldap_t 
         break;
 
     case APR_LDAP_OPT_DEBUG_LEVEL:
+#if defined(LDAP_OPT_DEBUG_LEVEL)
         rc = ldap_set_option(ldap ? ldap->ld : NULL, LDAP_OPT_DEBUG_LEVEL, &invalue->debug);
         break;
+#else
+        result->reason = "LDAP: Debug level not yet supported by APR on this "
+                         "LDAP SDK";
+        result->rc = LDAP_UNWILLING_TO_PERFORM;
+        return APR_ENOTIMPL;
+#endif
 
     case APR_LDAP_OPT_DEREF:
         rc = ldap_set_option(ldap ? ldap->ld : NULL, LDAP_OPT_DEREF, &invalue->deref);
