@@ -27,6 +27,7 @@ const struct testlist {
     {testuri},
     {testuuid},
     {testbuckets},
+    {testbuffer},
     {testpass},
     {testmd4},
     {testmd5},

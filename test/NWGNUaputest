@@ -173,6 +173,7 @@ TARGET_lib = \
 FILES_nlm_objs = \
 	$(OBJDIR)/abts.o \
 	$(OBJDIR)/testbuckets.o \
+	$(OBJDIR)/testbuffer.o \
 	$(OBJDIR)/testcrypto.o \
 	$(OBJDIR)/testdate.o \
 	$(OBJDIR)/testdbd.o \

@@ -238,6 +238,7 @@ ENDIF()
 SET(APR_TEST_SOURCES
   test/abts.c
   test/testbuckets.c
+  test/testbuffer.c
   test/testcrypto.c
   test/testdate.c
   test/testdbd.c
