@@ -393,6 +393,7 @@ APR_DECLARE(char *) apr_buffer_pstrncat(apr_pool_t *p, const apr_buffer_t *buf,
         else {
             if (APR_BUFFER_PLAIN == flags) {
                 memcpy(dst, src->d.mem, src->size);
+                dst += src->size;
             }
             else if (APR_BUFFER_BASE64 == flags) {
                 apr_size_t b64len;
