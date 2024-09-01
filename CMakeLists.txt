@@ -207,13 +207,13 @@ SET(APR_SOURCES
   dbm/sdbm/sdbm_lock.c
   dbm/sdbm/sdbm_pair.c
   encoding/apr_base64.c
+  hooks/apr_hooks.c
   jose/apr_jose.c
   jose/apr_jose_decode.c
   jose/apr_jose_encode.c
   json/apr_json.c
   json/apr_json_decode.c
   json/apr_json_encode.c
-  hooks/apr_hooks.c
   memcache/apr_memcache.c
   misc/apr_date.c
   misc/apr_error.c
