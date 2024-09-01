@@ -216,6 +216,7 @@ SET(APR_SOURCES
   hooks/apr_hooks.c
   memcache/apr_memcache.c
   misc/apr_date.c
+  misc/apr_error.c
   misc/apr_queue.c
   misc/apr_reslist.c
   misc/apr_rmm.c
