@@ -133,6 +133,7 @@ SET(APR_PUBLIC_HEADERS_STATIC
   include/apr_anylock.h
   include/apr_base64.h
   include/apr_buckets.h
+  include/apr_buffer.h
   include/apr_crypto.h
   include/apr_date.h
   include/apr_dbd.h
@@ -185,6 +186,7 @@ SET(APR_SOURCES
   buckets/apr_buckets_refcount.c
   buckets/apr_buckets_simple.c
   buckets/apr_buckets_socket.c
+  buffer/apr_buffer.c
   crypto/apr_crypto.c
   crypto/apr_crypto_prng.c
   crypto/apr_md4.c
