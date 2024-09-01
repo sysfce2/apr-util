@@ -139,8 +139,8 @@ SET(APR_PUBLIC_HEADERS_STATIC
   include/apr_dbd.h
   include/apr_dbm.h
   include/apr_hooks.h
-  include/apr_json.h
   include/apr_jose.h
+  include/apr_json.h
   include/apr_ldap_init.h
   include/apr_ldap_option.h
   include/apr_ldap_rebind.h
