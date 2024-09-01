@@ -72,7 +72,7 @@ jobs:
       shell: cmd
       run: |
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.arch }}
-        cmake -B ${{github.workspace}}/apu/build -S ${{github.workspace}}/apu -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake -B ${{github.workspace}}/apu/build -S ${{github.workspace}}/apu -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -DAPR_HAS_LDAP=OFF -G "${{ matrix.generator }}" -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
 
     - name: Build
       # Build your program with the given configuration
