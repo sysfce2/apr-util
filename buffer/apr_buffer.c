@@ -29,7 +29,7 @@
 
 #define APR_BUFFER_MAX (APR_SIZE_MAX/2)
 
-APR_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
+APU_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
                                              void *mem, apr_size_t len)
 {
 
@@ -44,7 +44,7 @@ APR_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
+APU_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
                                                 apr_pool_t *pool,
                                                 void *mem, apr_size_t len)
 {
@@ -71,7 +71,7 @@ APR_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
+APU_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
                                              char *str, apr_ssize_t len)
 {
 
@@ -103,7 +103,7 @@ APR_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
+APU_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
                                                 apr_pool_t *pool,
                                                 char *str, apr_ssize_t len)
 {
@@ -150,7 +150,7 @@ APR_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
+APU_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
                                                  apr_pool_t *pool)
 {
     apr_buffer_t *buf;
@@ -166,17 +166,17 @@ APR_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_size_t) apr_buffer_len(const apr_buffer_t *buf)
+APU_DECLARE(apr_size_t) apr_buffer_len(const apr_buffer_t *buf)
 {
     return buf->size;
 }
 
-APR_DECLARE(apr_size_t) apr_buffer_allocated(const apr_buffer_t *buf)
+APU_DECLARE(apr_size_t) apr_buffer_allocated(const apr_buffer_t *buf)
 {   
     return buf->size + buf->zero_terminated;
 }
 
-APR_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
+APU_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
 {
     if (!buf->d.mem) {
         return 1;
@@ -186,12 +186,12 @@ APR_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
     }
 }
 
-APR_DECLARE(int) apr_buffer_is_str(const apr_buffer_t *buf)
+APU_DECLARE(int) apr_buffer_is_str(const apr_buffer_t *buf)
 {
     return buf->zero_terminated;
 }
 
-APR_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
+APU_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
 {
     if (buf->zero_terminated) {
         return buf->d.str;
@@ -201,12 +201,12 @@ APR_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
     }
 }
 
-APR_DECLARE(char *) apr_buffer_pstrdup(apr_pool_t *pool, const apr_buffer_t *buf)
+APU_DECLARE(char *) apr_buffer_pstrdup(apr_pool_t *pool, const apr_buffer_t *buf)
 {
     return apr_pstrmemdup(pool, buf->d.str, buf->size);
 }
 
-APR_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
+APU_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
 {
     if (size) {
         size[0] = apr_buffer_len(buf);
@@ -215,7 +215,7 @@ APR_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
     return buf->d.mem;
 }
 
-APR_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf, apr_size_t *size)
+APU_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf, apr_size_t *size)
 {
     apr_size_t len = apr_buffer_len(buf);
 
@@ -226,7 +226,7 @@ APR_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf
     return apr_pmemdup(pool, buf->d.mem, len);
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
+APU_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
                                               const apr_buffer_t *in,
                                               apr_buffer_alloc alloc, void *ctx,
                                               int nelts)
@@ -265,14 +265,14 @@ APR_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) apr_buffer_dup(apr_buffer_t **out,
+APU_DECLARE(apr_status_t) apr_buffer_dup(apr_buffer_t **out,
                                          const apr_buffer_t *in,
                                          apr_buffer_alloc alloc, void *ctx)
 {
     return apr_buffer_arraydup(out, in, alloc, ctx, 1);
 }
 
-APR_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
+APU_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
                                            const apr_buffer_t *src,
                                            apr_buffer_alloc alloc, void *ctx)
 {
@@ -307,7 +307,7 @@ APR_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
     return dst;
 }
 
-APR_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *src,
+APU_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *src,
                                  const apr_buffer_t *dst)
 {
     if (!src || !src->d.mem) {
@@ -333,7 +333,7 @@ APR_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *src,
     }
 }
 
-APR_DECLARE(char *) apr_buffer_pstrncat(apr_pool_t *p, const apr_buffer_t *buf,
+APU_DECLARE(char *) apr_buffer_pstrncat(apr_pool_t *p, const apr_buffer_t *buf,
                                         int nelts, const char *sep, int flags,
                                         apr_size_t *nbytes)
 {

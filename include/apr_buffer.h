@@ -96,7 +96,7 @@ typedef struct
  * @param len The length of the memory buffer
  * @return APR_SUCCESS, or APR_EINVAL if len overflows.
  */
-APR_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
+APU_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
                                              void *mem, apr_size_t len)
                                              __attribute__((nonnull(1)));
 
@@ -114,7 +114,7 @@ APR_DECLARE(apr_status_t) apr_buffer_mem_set(apr_buffer_t *buf,
  * @return Returns APR_ENOMEM if we could not allocate enough memory,
  *         APR_EINVAL if len overflows, otherwise APR_SUCCESS.
  */
-APR_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
+APU_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
                                                 apr_pool_t *pool,
                                                 void *mem, apr_size_t len)
                                                 __attribute__((nonnull(1,2)));
@@ -128,7 +128,7 @@ APR_DECLARE(apr_status_t) apr_buffer_mem_create(apr_buffer_t **mb,
  * APR_BUFFER_STRING to have the length calculated.
  * @return APR_SUCCESS, or APR_EINVAL if len overflows.
  */
-APR_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
+APU_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
                                              char *str, apr_ssize_t len)
                                              __attribute__((nonnull(1)));
 
@@ -146,7 +146,7 @@ APR_DECLARE(apr_status_t) apr_buffer_str_set(apr_buffer_t *buf,
  * @return Returns APR_ENOMEM if we could not allocate enough memory,
  *         APR_EINVAL if len overflows, otherwise APR_SUCCESS.
  */
-APR_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
+APU_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
                                                 apr_pool_t *pool,
                                                 char *str, apr_ssize_t len)
                                                 __attribute__((nonnull(1)));
@@ -160,7 +160,7 @@ APR_DECLARE(apr_status_t) apr_buffer_str_create(apr_buffer_t **sb,
  * @return Returns APR_ENOMEM if we could not allocate enough memory,
  *         otherwise APR_SUCCESS.
  */
-APR_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
+APU_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
                                                  apr_pool_t *pool)
                                                  __attribute__((nonnull(1)));
 
@@ -173,7 +173,7 @@ APR_DECLARE(apr_status_t) apr_buffer_null_create(apr_buffer_t **nb,
  * @param buf The buffer.
  * @return Returns 1 if buffer is null, otherwise 0.
  */
-APR_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
+APU_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
                                     __attribute__((nonnull(1)));
 
 
@@ -185,7 +185,7 @@ APR_DECLARE(int) apr_buffer_is_null(const apr_buffer_t *buf)
  * @param buf The buffer.
  * @return Returns 1 if zero terminated, otherwise 0.
  */
-APR_DECLARE(int) apr_buffer_is_str(const apr_buffer_t *buf)
+APU_DECLARE(int) apr_buffer_is_str(const apr_buffer_t *buf)
                                    __attribute__((nonnull(1)));
 
 
@@ -205,7 +205,7 @@ APR_DECLARE(int) apr_buffer_is_str(const apr_buffer_t *buf)
  * @return The zero terminated string. Returns NULL if the buffer
  * contains memory.
  */
-APR_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
+APU_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
                                    __attribute__((nonnull(1)));
 
 
@@ -222,7 +222,7 @@ APR_DECLARE(char *) apr_buffer_str(const apr_buffer_t *buf)
  * @return The zero terminated string. Returns NULL if we could not
  *         allocate memory.
  */
-APR_DECLARE(char *) apr_buffer_pstrdup(apr_pool_t *pool, const apr_buffer_t *buf)
+APU_DECLARE(char *) apr_buffer_pstrdup(apr_pool_t *pool, const apr_buffer_t *buf)
                                        __attribute__((nonnull(1,2)));
 
 
@@ -238,7 +238,7 @@ APR_DECLARE(char *) apr_buffer_pstrdup(apr_pool_t *pool, const apr_buffer_t *buf
  * @param size Location to write the size to.
  * @return The memory buffer.
  */
-APR_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
+APU_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
                                    __attribute__((nonnull(1)));
 
 
@@ -252,7 +252,7 @@ APR_DECLARE(void *) apr_buffer_mem(const apr_buffer_t *buf, apr_size_t *size)
  * @param size Location to write the size to.
  * @return The zero memory buffer.
  */
-APR_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf, apr_size_t *size)
+APU_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf, apr_size_t *size)
                                              __attribute__((nonnull(1,2)));
 
 
@@ -266,7 +266,7 @@ APR_DECLARE(void *) apr_buffer_pmemdup(apr_pool_t *pool, const apr_buffer_t *buf
  * @param buf The string/memory buffer.
  * @return The size of the buffer, excluding terminating zero if present.
  */
-APR_DECLARE(apr_size_t) apr_buffer_len(const apr_buffer_t *buf)
+APU_DECLARE(apr_size_t) apr_buffer_len(const apr_buffer_t *buf)
                                        __attribute__((nonnull(1)));
 
 
@@ -281,7 +281,7 @@ APR_DECLARE(apr_size_t) apr_buffer_len(const apr_buffer_t *buf)
  * @param buf The string/memory buffer.
  * @return The size of the buffer, including terminating zero if present.
  */
-APR_DECLARE(apr_size_t) apr_buffer_allocated(const apr_buffer_t *buf)
+APU_DECLARE(apr_size_t) apr_buffer_allocated(const apr_buffer_t *buf)
                                              __attribute__((nonnull(1)));
 
 
@@ -310,7 +310,7 @@ typedef void *(*apr_buffer_alloc)(void *ctx, apr_size_t size);
  * @param nelts Number of buffers to duplicate
  * @return APR_ENONMEM if the alloc function returned NULL, otherwise APR_SUCCESS
  */
-APR_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
+APU_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
                                               const apr_buffer_t *in,
                                               apr_buffer_alloc alloc, void *ctx,
                                               int nelts)
@@ -333,7 +333,7 @@ APR_DECLARE(apr_status_t) apr_buffer_arraydup(apr_buffer_t **out,
  * @param ctx Context to pass to the callback function
  * @return APR_ENONMEM if the alloc function returned NULL, otherwise APR_SUCCESS
  */
-APR_DECLARE(apr_status_t) apr_buffer_dup(apr_buffer_t **out,
+APU_DECLARE(apr_status_t) apr_buffer_dup(apr_buffer_t **out,
                                          const apr_buffer_t *in,
                                          apr_buffer_alloc alloc, void *ctx)
                                          __attribute__((nonnull(1,2)));
@@ -356,7 +356,7 @@ APR_DECLARE(apr_status_t) apr_buffer_dup(apr_buffer_t **out,
  * @param ctx The context for the callback
  * @return Returns dst.
  */
-APR_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
+APU_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
                                            const apr_buffer_t *src,
                                            apr_buffer_alloc alloc, void *ctx)
                                            __attribute__((nonnull(1)));
@@ -376,7 +376,7 @@ APR_DECLARE(apr_buffer_t *) apr_buffer_cpy(apr_buffer_t *dst,
  * @return Positive, negative, or zero, depending on whether src is greater
  *         than, less than, or equal to dst.
  */
-APR_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *dst,
+APU_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *dst,
                                 const apr_buffer_t *src);
 
 /**
@@ -397,7 +397,7 @@ APR_DECLARE(int) apr_buffer_cmp(const apr_buffer_t *dst,
  * @param nbytes (output) strlen of new string (pass in NULL to omit)
  * @return The new string
  */
-APR_DECLARE(char *) apr_buffer_pstrncat(apr_pool_t *p, const apr_buffer_t *buf,
+APU_DECLARE(char *) apr_buffer_pstrncat(apr_pool_t *p, const apr_buffer_t *buf,
                                         int nelts, const char *sep, int flags,
                                         apr_size_t *nbytes);
 
