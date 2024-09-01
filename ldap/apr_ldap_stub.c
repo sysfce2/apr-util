@@ -99,7 +99,7 @@ static apr_status_t load_ldap(apr_pool_t *pool, const apr_ldap_driver_t **driver
     if (!lfn) \
         return failres;
 
-APR_DECLARE(apr_status_t) apr_ldap_get_driver(apr_pool_t *pool,
+APU_DECLARE(apr_status_t) apr_ldap_get_driver(apr_pool_t *pool,
                                               const apr_ldap_driver_t **driver,
                                               apu_err_t *err)
 {

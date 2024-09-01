@@ -151,7 +151,7 @@ typedef struct apr_ldap_driver_t apr_ldap_driver_t;
  *  @return APR_EDSOOPEN if DSO driver file can't be opened
  *  @return APR_ESYMNOTFOUND if the driver file doesn't contain a driver
  */
-APR_DECLARE(apr_status_t) apr_ldap_get_driver(apr_pool_t *pool,
+APU_DECLARE(apr_status_t) apr_ldap_get_driver(apr_pool_t *pool,
                                               const apr_ldap_driver_t **driver,
                                               apu_err_t *err)
                                               __attribute__((nonnull(1)));
