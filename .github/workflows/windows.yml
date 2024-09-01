@@ -27,9 +27,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      repository: apache/apr
-      ref: 1.7.x
-      path: apr
+      with:
+        repository: apache/apr
+        ref: 1.7.x
+        path: apr
 
     - name: Configure APR
       run: cmake -B ${{github.workspace}}/apr/out/build -S ${{github.workspace}}/apr -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
@@ -41,7 +42,8 @@ jobs:
       run: cmake --install ${{github.workspace}}/apr/out/build --config ${{ matrix.build-type }}
 
     - uses: actions/checkout@v4
-      path: apu
+      with:
+        path: apu
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/apu/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
