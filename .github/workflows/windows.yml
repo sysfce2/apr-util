@@ -25,7 +25,20 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ${{ matrix.os }}
 
+    env:
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
     steps:
+    - name: Export GitHub Actions cache environment variables
+      uses: actions/github-script@v7
+      with:
+          script: |
+              core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+              core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - name: Install dependencies
+      run: vcpkg install --triplet ${{ matrix.triplet }} expat
+
     - uses: actions/checkout@v4
       with:
         repository: apache/apr
@@ -33,7 +46,7 @@ jobs:
         path: apr
 
     - name: Configure APR
-      run: cmake -B ${{github.workspace}}/apr/out/build -S ${{github.workspace}}/apr -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
+      run: cmake -B ${{github.workspace}}/apr/out/build -S ${{github.workspace}}/apr -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
     - name: Build APR
       run: cmake --build ${{github.workspace}}/apr/out/build --config ${{ matrix.build-type }}
@@ -46,7 +59,7 @@ jobs:
         path: apu
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/apu/build -S ${{github.workspace}}/apu -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
+      run: cmake -B ${{github.workspace}}/apu/build -S ${{github.workspace}}/apu -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
     - name: Build
       # Build your program with the given configuration
