@@ -237,6 +237,8 @@ SET(APR_TEST_SOURCES
   test/testdate.c
   test/testdbd.c
   test/testdbm.c
+  test/testjson.c
+  test/testjose.c
   test/testldap.c
   test/testmd4.c
   test/testmd5.c
