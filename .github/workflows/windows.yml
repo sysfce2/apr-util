@@ -46,7 +46,7 @@ jobs:
         path: apu
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/apu/build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
+      run: cmake -B ${{github.workspace}}/apu/build -S ${{github.workspace}}/apu -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DAPR_BUILD_TESTAPR=ON -DTEST_STATIC_LIBS=${{ matrix.test-static }} -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -T ${{ matrix.toolset }}
 
     - name: Build
       # Build your program with the given configuration
