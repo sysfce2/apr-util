@@ -15,6 +15,7 @@ jobs:
           - name: Default
             os: windows-latest
             triplet: x64-windows
+            toolset: v143
             arch: x64
             build-type: Debug
             generator:  "Visual Studio 17 2022"
