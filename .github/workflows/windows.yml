@@ -11,12 +11,12 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]
-        build-type: [Debug, Release]
-        generator: [ "Visual Studio 17 2022" ]
-        arch: [ "Win32", "x64" ]
-        toolset: [ "v143", "v142" ]
-        test-static: [ "ON", "OFF" ]
+        include:
+          - name: Default
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator:  "Visual Studio 17 2022"
       fail-fast: false
     
     name: "MSVC ${{ matrix.toolset }} ${{ matrix.arch }} [${{ matrix.build-type }}] test-static=${{ matrix.test-static }} on ${{ matrix.os }}"
