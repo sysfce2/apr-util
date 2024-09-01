@@ -2,10 +2,10 @@ name: Windows
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "1.7.x" ]
     tags: [ "*" ]
   pull_request:
-    branches: [ "trunk" ]
+    branches: [ "1.7.x" ]
 
 jobs:
   build:
