@@ -74,24 +74,14 @@ ENDIF()
 
 # create 1-or-0 representation of feature tests for apu.h
 
-SET(apu_have_crypto_10 0)
 SET(apu_have_apr_iconv_10 0) # not yet implemented
-SET(apr_has_ldap_10 0)
 SET(apu_use_libxml2_10 0)
 SET(apu_use_expat_10 0)
-
-IF(APU_HAVE_CRYPTO)
-  SET(apu_have_crypto_10 1)
-ENDIF()
 
 IF(APU_USE_EXPAT)
   SET(apu_use_expat_10 1)
 ELSE()
   SET(apu_use_libxml2_10 1)
-ENDIF()
-
-IF(APR_HAS_LDAP)
-  SET(apr_has_ldap_10 1)
 ENDIF()
 
 SET(LDAP_LIBRARIES)

@@ -31,7 +31,7 @@
  */
 
 /* this will be defined if LDAP support was compiled into apr-util */
-#define APR_HAS_LDAP		    @apr_has_ldap_10@
+#cmakedefine01 APR_HAS_LDAP
 
 /* identify the LDAP toolkit used */
 #define APR_HAS_NETSCAPE_LDAPSDK    0

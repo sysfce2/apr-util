@@ -130,7 +130,7 @@
 #define APU_HAVE_ODBC           1
 #endif
 
-#define APU_HAVE_CRYPTO         @apu_have_crypto_10@
+#cmakedefine01 APU_HAVE_CRYPTO
 
 #ifndef APU_DSO_MODULE_BUILD
 #define APU_HAVE_OPENSSL        0
