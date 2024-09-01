@@ -37,6 +37,7 @@
  */
 
 #include "apr.h"
+#include "apu.h"
 #include "apr_pools.h"
 
 #ifdef __cplusplus
