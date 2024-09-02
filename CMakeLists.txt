@@ -260,6 +260,12 @@ SET(dbd_drivers)
 
 # Note: The WINNT definition on some targets is used only by libaprutil.rc.
 
+IF (MSVC)
+  # Ignore Microsoft's interpretation of secure development
+  # and the POSIX string handling API
+  ADD_COMPILE_DEFINITIONS(_CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS)
+ENDIF()
+
 # libaprutil-1 is shared, aprutil-1 is static
 ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
 SET(install_targets ${install_targets} libaprutil-1)
