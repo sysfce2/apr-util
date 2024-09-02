@@ -228,32 +228,30 @@ IF(APR_HAS_LDAP)
   SET(APR_SOURCES ${APR_SOURCES} ldap/apr_ldap_stub.c ldap/apr_ldap_url.c)
 ENDIF()
 
-SET(APR_TEST_SOURCES
-  test/abts.c
-  test/testbuckets.c
-  test/testbuffer.c
-  test/testcrypto.c
-  test/testdate.c
-  test/testdbd.c
-  test/testdbm.c
-  test/testjson.c
-  test/testjose.c
-  test/testldap.c
-  test/testmd4.c
-  test/testmd5.c
-  test/testmemcache.c
-  test/testpass.c
-  test/testqueue.c
-  test/testredis.c
-  test/testreslist.c
-  test/testrmm.c
-  test/testsiphash.c
-  test/teststrmatch.c
-  test/testuri.c
-  test/testutil.c
-  test/testuuid.c
-  test/testxlate.c
-  test/testxml.c
+SET(APR_TEST_SUITES
+  testbuckets
+  testbuffer
+  testcrypto
+  testdate
+  testdbd
+  testdbm
+  testjson
+  testjose
+  testldap
+  testmd4
+  testmd5
+  testmemcache
+  testpass
+  testqueue
+  testredis
+  testreslist
+  testrmm
+  testsiphash
+  teststrmatch
+  testuri
+  testuuid
+  testxlate
+  testxml
 )
 
 SET(install_targets)
@@ -331,12 +329,24 @@ IF(APR_BUILD_TESTAPR)
     SET(apiflag)
   ENDIF()
 
+  SET (APR_TEST_SOURCES
+    test/abts.c
+    test/testutil.c
+    )
+
+  FOREACH(testsuite ${APR_TEST_SUITES})
+    LIST(APPEND APR_TEST_SOURCES test/${testsuite}.c)
+  ENDFOREACH()
+
   ADD_EXECUTABLE(testall ${APR_TEST_SOURCES})
   TARGET_LINK_LIBRARIES(testall ${whichapr} ${apr_ldap_libraries} ${XMLLIB_LIBRARIES} ${LDAP_LIBRARIES})
   IF(apiflag)
     SET_TARGET_PROPERTIES(testall PROPERTIES COMPILE_FLAGS ${apiflag})
   ENDIF()
-  ADD_TEST(NAME testall COMMAND testall)
+
+  FOREACH(test ${APR_TEST_SUITES})
+    ADD_TEST(NAME ${test} COMMAND testall ${test})
+  ENDFOREACH()
 
   ADD_EXECUTABLE(dbd test/dbd.c)
   TARGET_LINK_LIBRARIES(dbd ${whichapr})
