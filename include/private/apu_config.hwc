@@ -24,12 +24,7 @@
 #ifndef APU_CONFIG_H
 #define APU_CONFIG_H
 
-/* Compile win32 with DSO support for .dll builds */
-#ifdef APU_DECLARE_STATIC
-#define APU_DSO_BUILD           0
-#else
-#define APU_DSO_BUILD           1
-#endif
+#cmakedefine01 APU_DSO_BUILD
 
 /* Presume a standard, modern (5.x) mysql sdk/
 #define HAVE_MY_GLOBAL_H        1
