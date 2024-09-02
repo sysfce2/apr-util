@@ -287,7 +287,8 @@ IF(APU_BUILD_SHARED)
   ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
   SET(install_targets ${install_targets} libaprutil-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/libaprutil-1.pdb)
-  TARGET_LINK_LIBRARIES(libaprutil-1 ${XMLLIB_LIBRARIES} ${APR_LIBRARIES})
+  TARGET_LINK_LIBRARIES(libaprutil-1
+                        PRIVATE ${XMLLIB_LIBRARIES} ${APR_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
                              PRIVATE "APU_DECLARE_EXPORT;APR_DECLARE_IMPORT;XML_STATIC;WINNT"
                              INTERFACE "APU_DECLARE_IMPORT")
@@ -296,7 +297,8 @@ ENDIF()
 IF(APU_BUILD_STATIC)
   ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
   SET(install_targets ${install_targets} aprutil-1)
-  TARGET_LINK_LIBRARIES(aprutil-1 ${APR_LIBRARIES} ${XMLLIB_LIBRARIES})
+  TARGET_LINK_LIBRARIES(aprutil-1
+                        PRIVATE ${APR_LIBRARIES} ${XMLLIB_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(aprutil-1
                              PRIVATE "APU_DECLARE_STATIC;APR_DECLARE_STATIC;APU_DSO_MODULE_BUILD;XML_STATIC"
                              INTERFACE "APU_DECLARE_STATIC")
@@ -314,7 +316,8 @@ IF(APU_HAVE_CRYPTO)
   SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
                              PRIVATE "DLL_NAME=apr_crypto_openssl")
-  TARGET_LINK_LIBRARIES(apr_crypto_openssl-1 libaprutil-1 ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
+  TARGET_LINK_LIBRARIES(apr_crypto_openssl-1
+                        PRIVATE libaprutil-1 ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
 ENDIF()
 
 IF(APU_HAVE_ODBC)
@@ -322,7 +325,8 @@ IF(APU_HAVE_ODBC)
   SET(install_targets ${install_targets} apr_dbd_odbc-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_dbd_odbc-1.pdb)
   SET(dbd_drivers ${dbd_drivers} odbc)
-  TARGET_LINK_LIBRARIES(apr_dbd_odbc-1 libaprutil-1 ${APR_LIBRARIES} odbc32 odbccp32)
+  TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
+                        PRIVATE libaprutil-1 ${APR_LIBRARIES} odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
   SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APR_DECLARE_IMPORT;APU_DSO_MODULE_BUILD;WINNT")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
@@ -334,7 +338,8 @@ IF(APR_HAS_LDAP)
               ldap/apr_ldap_rebind.c libaprutil.rc)
   SET(install_targets ${install_targets} apr_ldap-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_ldap-1.pdb)
-  TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1 ${APR_LIBRARIES} ${LDAP_LIBRARIES})
+  TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1
+                        PRIVATE ${APR_LIBRARIES} ${LDAP_LIBRARIES})
   SET_TARGET_PROPERTIES(apr_ldap-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
   SET_TARGET_PROPERTIES(apr_ldap-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_ldap-1
@@ -357,10 +362,10 @@ IF(APR_BUILD_TESTAPR)
                   ${PROJECT_BINARY_DIR}/data/billion-laughs.xml)
 
   IF(TEST_STATIC_LIBS)
-    SET(whichapr    aprutil-1)
+    SET(whichapr    "${APR_LIBRARIES};aprutil-1")
     SET(apiflag     "-DAPR_DECLARE_STATIC")
   ELSE()
-    SET(whichapr    libaprutil-1)
+    SET(whichapr    "${APR_LIBRARIES};libaprutil-1")
     SET(apiflag)
   ENDIF()
 
