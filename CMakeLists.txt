@@ -101,10 +101,8 @@ CONFIGURE_FILE(include/apu.hwc
               ${PROJECT_BINARY_DIR}/apu.h)
 CONFIGURE_FILE(include/apr_ldap.hwc
               ${PROJECT_BINARY_DIR}/apr_ldap.h)
-# "COPYONLY" just because anything else isn't implemented ;)
-CONFIGURE_FILE(include/private/apu_config.hw
-               ${PROJECT_BINARY_DIR}/apu_config.h
-               COPYONLY)
+CONFIGURE_FILE(include/private/apu_config.hwc
+               ${PROJECT_BINARY_DIR}/apu_config.h)
 CONFIGURE_FILE(include/private/apu_select_dbm.hw
                ${PROJECT_BINARY_DIR}/apu_select_dbm.h
                COPYONLY)
@@ -351,7 +349,7 @@ IF(APU_DSO_MODULE_BUILD AND APU_HAVE_ODBC)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
                         PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
-  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APU_DSO_MODULE_BUILD=${apu_dso_module_build_10}")
+  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;APU_DSO_MODULE_BUILD=${apu_dso_module_build_10}")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
                              PRIVATE "DLL_NAME=apr_dbd_odbc")
 ENDIF()
