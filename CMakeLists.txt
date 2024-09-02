@@ -27,6 +27,7 @@ IF(POLICY CMP0091)
   CMAKE_POLICY(SET CMP0091 NEW)
 ENDIF()
 
+FIND_PACKAGE(APR REQUIRED)
 FIND_PACKAGE(EXPAT)
 FIND_PACKAGE(LibXml2)
 FIND_PACKAGE(OpenSSL)
@@ -51,21 +52,10 @@ OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"                      OFF)
 OPTION(TEST_STATIC_LIBS     "Test programs use APR static libraries instead of shared libraries?" OFF)
-SET(APR_INCLUDE_DIR         "${CMAKE_INSTALL_PREFIX}/include"           CACHE STRING "Directory with APR include files")
-SET(APR_LIBRARIES           "${CMAKE_INSTALL_PREFIX}/lib/libapr-1.lib"  CACHE STRING "APR library to link with")
 SET(LIBXML2_ICONV_INCLUDE_DIR   ""
     CACHE STRING "Directory with iconv include files for libxml2")
 SET(LIBXML2_ICONV_LIBRARIES     ""
     CACHE STRING "iconv libraries to link with for libxml2")
-
-IF(NOT EXISTS "${APR_INCLUDE_DIR}/apr.h")
-  MESSAGE(FATAL_ERROR "APR include directory ${APR_INCLUDE_DIR} is not correct.")
-ENDIF()
-FOREACH(onelib ${APR_LIBRARIES})
-  IF(NOT EXISTS ${onelib})
-    MESSAGE(FATAL_ERROR "APR library ${onelib} was not found.")
-  ENDIF()
-ENDFOREACH()
 
 IF(NOT APU_BUILD_SHARED AND NOT APU_BUILD_STATIC)
   MESSAGE(FATAL_ERROR "Both APU_BUILD_SHARED and APU_BUILD_STATIC have been disabled")
@@ -286,9 +276,9 @@ IF(APU_BUILD_SHARED)
   SET(install_targets ${install_targets} libaprutil-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/libaprutil-1.pdb)
   TARGET_LINK_LIBRARIES(libaprutil-1
-                        PRIVATE ${XMLLIB_LIBRARIES} ${APR_LIBRARIES})
+                        PRIVATE apr::libapr-1 ${XMLLIB_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
-                             PRIVATE "APU_DECLARE_EXPORT;APR_DECLARE_IMPORT;XML_STATIC"
+                             PRIVATE "APU_DECLARE_EXPORT;XML_STATIC"
                              INTERFACE "APU_DECLARE_IMPORT")
 ENDIF()
 
@@ -296,9 +286,9 @@ IF(APU_BUILD_STATIC)
   ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
   SET(install_targets ${install_targets} aprutil-1)
   TARGET_LINK_LIBRARIES(aprutil-1
-                        PRIVATE ${APR_LIBRARIES} ${XMLLIB_LIBRARIES})
+                        PRIVATE apr::apr-1 ${XMLLIB_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(aprutil-1
-                             PRIVATE "APU_DECLARE_STATIC;APR_DECLARE_STATIC;APU_DSO_MODULE_BUILD;XML_STATIC"
+                             PRIVATE "APU_DECLARE_STATIC;APU_DSO_MODULE_BUILD;XML_STATIC"
                              INTERFACE "APU_DECLARE_STATIC")
 ENDIF()
 
@@ -311,11 +301,10 @@ IF(APU_HAVE_CRYPTO)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_crypto_openssl-1.pdb)
   TARGET_INCLUDE_DIRECTORIES(apr_crypto_openssl-1
                              PRIVATE "${OPENSSL_INCLUDE_DIR}")
-  SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
                              PRIVATE "DLL_NAME=apr_crypto_openssl")
   TARGET_LINK_LIBRARIES(apr_crypto_openssl-1
-                        PRIVATE libaprutil-1 ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
+                        PRIVATE libaprutil-1 apr::libapr-1 ${OPENSSL_LIBRARIES})
 ENDIF()
 
 IF(APU_HAVE_ODBC)
@@ -324,9 +313,9 @@ IF(APU_HAVE_ODBC)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_dbd_odbc-1.pdb)
   SET(dbd_drivers ${dbd_drivers} odbc)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
-                        PRIVATE libaprutil-1 ${APR_LIBRARIES} odbc32 odbccp32)
+                        PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
-  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APR_DECLARE_IMPORT;APU_DSO_MODULE_BUILD")
+  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APU_DSO_MODULE_BUILD")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
                              PRIVATE "DLL_NAME=apr_dbd_odbc")
 ENDIF()
@@ -337,8 +326,7 @@ IF(APR_HAS_LDAP)
   SET(install_targets ${install_targets} apr_ldap-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_ldap-1.pdb)
   TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1
-                        PRIVATE ${APR_LIBRARIES} ${LDAP_LIBRARIES})
-  SET_TARGET_PROPERTIES(apr_ldap-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
+                        PRIVATE apr::libapr-1 ${LDAP_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(apr_ldap-1
                              PRIVATE "DLL_NAME=apr_ldap")
   SET(apr_ldap_libraries apr_ldap-1)
@@ -359,10 +347,10 @@ IF(APR_BUILD_TESTAPR)
                   ${PROJECT_BINARY_DIR}/data/billion-laughs.xml)
 
   IF(TEST_STATIC_LIBS)
-    SET(whichapr    "${APR_LIBRARIES};aprutil-1")
-    SET(apiflag     "-DAPR_DECLARE_STATIC")
+    SET(whichapr    "apr::apr-1;aprutil-1")
+    SET(apiflag)
   ELSE()
-    SET(whichapr    "${APR_LIBRARIES};libaprutil-1")
+    SET(whichapr    "apr::libapr-1;libaprutil-1")
     SET(apiflag)
   ENDIF()
 
@@ -433,8 +421,6 @@ MESSAGE(STATUS "  Build static libs ............... : ${APU_BUILD_STATIC}")
 MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
 MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
-MESSAGE(STATUS "  APR include directory ........... : ${APR_INCLUDE_DIR}")
-MESSAGE(STATUS "  APR libraries ................... : ${APR_LIBRARIES}")
 MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  APU_HAVE_CRYPTO ................. : ${APU_HAVE_CRYPTO}")
 MESSAGE(STATUS "  APR_HAS_LDAP .................... : ${APR_HAS_LDAP}")
