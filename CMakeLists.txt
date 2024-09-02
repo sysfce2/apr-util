@@ -21,6 +21,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 PROJECT(APR-Util C)
 
+# Enable support for MSVC runtime library selection by abstraction
+# if supported by CMake.
+IF(POLICY CMP0091)
+  CMAKE_POLICY(SET CMP0091 NEW)
+ENDIF()
+
 FIND_PACKAGE(EXPAT)
 FIND_PACKAGE(LibXml2)
 FIND_PACKAGE(OpenSSL)
