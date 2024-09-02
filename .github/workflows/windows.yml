@@ -18,6 +18,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: Ninja
+            test-static: OFF
       fail-fast: false
     
     name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] test-static=${{ matrix.test-static }} on ${{ matrix.os }}"
