@@ -311,7 +311,8 @@ IF(APU_HAVE_CRYPTO)
   ADD_LIBRARY(apr_crypto_openssl-1 SHARED crypto/apr_crypto_openssl.c libaprutil.rc)
   SET(install_targets ${install_targets} apr_crypto_openssl-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_crypto_openssl-1.pdb)
-  SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES INCLUDE_DIRECTORIES "${APR_INCLUDE_DIRECTORIES};${OPENSSL_INCLUDE_DIR}")
+  TARGET_INCLUDE_DIRECTORIES(apr_crypto_openssl-1
+                             PRIVATE "${OPENSSL_INCLUDE_DIR}")
   SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
   SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
