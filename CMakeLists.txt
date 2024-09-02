@@ -366,7 +366,7 @@ IF(APR_BUILD_TESTAPR)
     ADD_TEST(NAME dbd-${somedbd} COMMAND dbd ${somedbd})
   ENDFOREACH()
 
-  ADD_EXECUTABLE(memcachedmock test/memcachedmock)
+  ADD_EXECUTABLE(memcachedmock test/memcachedmock.c)
   TARGET_LINK_LIBRARIES(memcachedmock ${whichapr})
   IF(apiflag)
     SET_TARGET_PROPERTIES(dbd PROPERTIES COMPILE_FLAGS ${apiflag})
