@@ -376,10 +376,8 @@ IF(APR_BUILD_TESTAPR)
 
   IF(TEST_STATIC_LIBS)
     SET(whichapr    "apr::apr-1;aprutil-1")
-    SET(apiflag)
   ELSE()
     SET(whichapr    "apr::libapr-1;libaprutil-1")
-    SET(apiflag)
   ENDIF()
 
   SET (APR_TEST_SOURCES
@@ -394,9 +392,6 @@ IF(APR_BUILD_TESTAPR)
   ADD_EXECUTABLE(testall ${APR_TEST_SOURCES})
   TARGET_LINK_LIBRARIES(testall ${whichapr})
   TARGET_COMPILE_DEFINITIONS(testall PRIVATE "BINPATH=$<TARGET_FILE_DIR:testall>")
-  IF(apiflag)
-    SET_TARGET_PROPERTIES(testall PROPERTIES COMPILE_FLAGS ${apiflag})
-  ENDIF()
 
   FOREACH(test ${APR_TEST_SUITES})
     ADD_TEST(NAME ${test} COMMAND testall -v ${test})
@@ -404,9 +399,6 @@ IF(APR_BUILD_TESTAPR)
 
   ADD_EXECUTABLE(dbd test/dbd.c)
   TARGET_LINK_LIBRARIES(dbd ${whichapr})
-  IF(apiflag)
-    SET_TARGET_PROPERTIES(dbd PROPERTIES COMPILE_FLAGS ${apiflag})
-  ENDIF()
 
   # dbd is run multiple times with different parameters.
   FOREACH(somedbd ${dbd_drivers})
@@ -415,9 +407,6 @@ IF(APR_BUILD_TESTAPR)
 
   ADD_EXECUTABLE(memcachedmock test/memcachedmock.c)
   TARGET_LINK_LIBRARIES(memcachedmock ${whichapr})
-  IF(apiflag)
-    SET_TARGET_PROPERTIES(dbd PROPERTIES COMPILE_FLAGS ${apiflag})
-  ENDIF()
 
   ADD_DEPENDENCIES(testall memcachedmock)
 ENDIF (APR_BUILD_TESTAPR)
