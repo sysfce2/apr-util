@@ -274,8 +274,6 @@ SET(install_targets)
 SET(install_bin_pdb)
 SET(dbd_drivers)
 
-# Note: The WINNT definition on some targets is used only by libaprutil.rc.
-
 IF (MSVC)
   # Ignore Microsoft's interpretation of secure development
   # and the POSIX string handling API
@@ -290,7 +288,7 @@ IF(APU_BUILD_SHARED)
   TARGET_LINK_LIBRARIES(libaprutil-1
                         PRIVATE ${XMLLIB_LIBRARIES} ${APR_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
-                             PRIVATE "APU_DECLARE_EXPORT;APR_DECLARE_IMPORT;XML_STATIC;WINNT"
+                             PRIVATE "APU_DECLARE_EXPORT;APR_DECLARE_IMPORT;XML_STATIC"
                              INTERFACE "APU_DECLARE_IMPORT")
 ENDIF()
 
@@ -313,7 +311,6 @@ IF(APU_HAVE_CRYPTO)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_crypto_openssl-1.pdb)
   TARGET_INCLUDE_DIRECTORIES(apr_crypto_openssl-1
                              PRIVATE "${OPENSSL_INCLUDE_DIR}")
-  SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
   SET_TARGET_PROPERTIES(apr_crypto_openssl-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
                              PRIVATE "DLL_NAME=apr_crypto_openssl")
@@ -329,7 +326,7 @@ IF(APU_HAVE_ODBC)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
                         PRIVATE libaprutil-1 ${APR_LIBRARIES} odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
-  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APR_DECLARE_IMPORT;APU_DSO_MODULE_BUILD;WINNT")
+  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APR_DECLARE_IMPORT;APU_DSO_MODULE_BUILD")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
                              PRIVATE "DLL_NAME=apr_dbd_odbc")
 ENDIF()
@@ -341,7 +338,6 @@ IF(APR_HAS_LDAP)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_ldap-1.pdb)
   TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1
                         PRIVATE ${APR_LIBRARIES} ${LDAP_LIBRARIES})
-  SET_TARGET_PROPERTIES(apr_ldap-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
   SET_TARGET_PROPERTIES(apr_ldap-1 PROPERTIES COMPILE_FLAGS "-DAPR_DECLARE_IMPORT")
   TARGET_COMPILE_DEFINITIONS(apr_ldap-1
                              PRIVATE "DLL_NAME=apr_ldap")

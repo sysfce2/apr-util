@@ -64,6 +64,8 @@ Changes with APR-util 1.7.0
   *) New apr_crypto_prng API and apr_crypto_random[_thread]_bytes() functions.
      [Yann Ylavic]
 
+  *) win32: Remove Windows 9x support.
+
 Changes with APR-util 1.6.x and later:
 
   *) http://svn.apache.org/viewvc/apr/apr-util/branches/1.6.x/CHANGES?view=markup
