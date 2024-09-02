@@ -46,6 +46,7 @@ ENDIF()
 
 OPTION(APU_BUILD_SHARED     "Build shared libraries"                    ON)
 OPTION(APU_BUILD_STATIC     "Build static libraries"                    ON)
+OPTION(APU_DSO_MODULE_BUILD "Use DSO build of modular components"       ON)
 OPTION(APU_HAVE_CRYPTO      "Crypto support"                            OFF)
 OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
@@ -72,6 +73,10 @@ IF(APU_USE_EXPAT AND APU_USE_LIBXML2)
   MESSAGE(FATAL_ERROR "Only one of Expat and LibXml2 can be selected")
 ENDIF()
 
+IF(APU_DSO_MODULE_BUILD AND NOT APU_BUILD_SHARED)
+  MESSAGE(FATAL_ERROR "APU_DSO_MODULE_BUILD requires APU_BUILD_SHARED.")
+ENDIF()
+
 IF(APU_HAVE_CRYPTO)
 IF(NOT OPENSSL_FOUND)
   MESSAGE(FATAL_ERROR "OpenSSL is the only supported crypto implementation, and it wasn't found!")
@@ -81,10 +86,15 @@ ENDIF()
 # create 1-or-0 representation of feature tests for apu.h
 
 SET(apu_have_apr_iconv_10 0) # not yet implemented
+SET(apu_dso_module_build_10 0)
 
 SET(LDAP_LIBRARIES)
 IF(APR_HAS_LDAP)
   SET(LDAP_LIBRARIES wldap32)
+ENDIF()
+
+IF(APU_DSO_MODULE_BUILD)
+  SET(apu_dso_module_build_10 1)
 ENDIF()
 
 CONFIGURE_FILE(include/apu.hwc
@@ -234,6 +244,11 @@ IF(APR_HAS_LDAP)
   SET(APR_SOURCES ${APR_SOURCES} ldap/apr_ldap_stub.c ldap/apr_ldap_url.c)
 ENDIF()
 
+# Sources and libraries for APR builtin drivers. Used when APU_DSO_MODULE_BUILD=OFF.
+SET(APU_EXTRA_SOURCES)
+SET(APU_EXTRA_LIBRARIES)
+SET(APU_EXTRA_INCLUDE_DIRECTORIES)
+
 SET(APR_TEST_SUITES
   testbuckets
   testbuffer
@@ -270,29 +285,50 @@ IF (MSVC)
   ADD_COMPILE_DEFINITIONS(_CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS)
 ENDIF()
 
+IF(NOT APU_DSO_MODULE_BUILD AND APU_HAVE_CRYPTO)
+  IF(NOT OPENSSL_FOUND)
+    MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
+  ENDIF()
+
+  LIST(APPEND APU_EXTRA_SOURCES crypto/apr_crypto_openssl.c)
+  LIST(APPEND APU_EXTRA_LIBRARIES ${OPENSSL_LIBRARIES})
+  LIST(APPEND APU_EXTRA_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+ENDIF()
+
+IF(NOT APU_DSO_MODULE_BUILD AND APU_HAVE_ODBC)
+  LIST(APPEND dbd_drivers odbc)
+
+  LIST(APPEND APU_EXTRA_SOURCES dbd/apr_dbd_odbc.c)
+  LIST(APPEND APU_EXTRA_LIBRARIES odbc32 odbccp32)
+ENDIF()
+
 # libaprutil-1 is shared, aprutil-1 is static
 IF(APU_BUILD_SHARED)
-  ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
+  ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
   SET(install_targets ${install_targets} libaprutil-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/libaprutil-1.pdb)
   TARGET_LINK_LIBRARIES(libaprutil-1
-                        PRIVATE apr::libapr-1 ${XMLLIB_LIBRARIES})
+                        PRIVATE apr::libapr-1 ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
+  TARGET_INCLUDE_DIRECTORIES(libaprutil-1
+                             PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
-                             PRIVATE "APU_DECLARE_EXPORT;XML_STATIC"
+                             PRIVATE "APU_DECLARE_EXPORT;APU_DSO_MODULE_BUILD=${apu_dso_module_build_10};XML_STATIC"
                              INTERFACE "APU_DECLARE_IMPORT")
 ENDIF()
 
 IF(APU_BUILD_STATIC)
-  ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
+  ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
   SET(install_targets ${install_targets} aprutil-1)
   TARGET_LINK_LIBRARIES(aprutil-1
                         PRIVATE apr::apr-1 ${XMLLIB_LIBRARIES})
+  TARGET_INCLUDE_DIRECTORIES(aprutil-1
+                             PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
   TARGET_COMPILE_DEFINITIONS(aprutil-1
-                             PRIVATE "APU_DECLARE_STATIC;APU_DSO_MODULE_BUILD;XML_STATIC"
+                             PRIVATE "APU_DECLARE_STATIC;APU_DSO_MODULE_BUILD=${apu_dso_module_build_10};XML_STATIC"
                              INTERFACE "APU_DECLARE_STATIC")
 ENDIF()
 
-IF(APU_HAVE_CRYPTO)
+IF(APU_DSO_MODULE_BUILD AND APU_HAVE_CRYPTO)
   IF(NOT OPENSSL_FOUND)
     MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
   ENDIF()
@@ -307,7 +343,7 @@ IF(APU_HAVE_CRYPTO)
                         PRIVATE libaprutil-1 apr::libapr-1 ${OPENSSL_LIBRARIES})
 ENDIF()
 
-IF(APU_HAVE_ODBC)
+IF(APU_DSO_MODULE_BUILD AND APU_HAVE_ODBC)
   ADD_LIBRARY(apr_dbd_odbc-1 SHARED dbd/apr_dbd_odbc.c libaprutil.rc)
   SET(install_targets ${install_targets} apr_dbd_odbc-1)
   SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_dbd_odbc-1.pdb)
@@ -315,12 +351,12 @@ IF(APU_HAVE_ODBC)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
                         PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
-  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APU_DSO_MODULE_BUILD")
+  SET_TARGET_PROPERTIES(apr_dbd_odbc-1 PROPERTIES COMPILE_DEFINITIONS "APU_HAVE_ODBC;HAVE_SQL_H;APU_DSO_MODULE_BUILD=${apu_dso_module_build_10}")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
                              PRIVATE "DLL_NAME=apr_dbd_odbc")
 ENDIF()
 
-IF(APR_HAS_LDAP)
+IF(APU_DSO_MODULE_BUILD AND APR_HAS_LDAP)
   ADD_LIBRARY(apr_ldap-1 SHARED ldap/apr_ldap_init.c ldap/apr_ldap_option.c 
               ldap/apr_ldap_rebind.c libaprutil.rc)
   SET(install_targets ${install_targets} apr_ldap-1)
