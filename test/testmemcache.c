@@ -189,7 +189,7 @@ static apr_status_t check_mc(void)
     return rv;
 }
 
-static int has_memcache_server()
+static int has_memcache_server(void)
 {
     static int has_memcache_server_state = -1;
 
@@ -732,7 +732,6 @@ static void test_connection_validation(abts_case *tc, void *data)
 
 abts_suite *testmemcache(abts_suite * suite)
 {
-    apr_status_t rv;
     suite = ADD_SUITE(suite);
     abts_run_test(suite, test_memcache_create, NULL);
     abts_run_test(suite, test_memcache_user_funcs, NULL);
