@@ -358,7 +358,8 @@ IF(APU_DSO_BUILD AND APU_HAVE_ODBC)
   LIST(APPEND dbd_drivers odbc)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
                         PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
-  SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
+  TARGET_LINK_OPTIONS(apr_dbd_odbc-1
+                      PRIVATE "/export:apr_dbd_odbc_driver")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
                              PRIVATE "DLL_NAME=apr_dbd_odbc")
 ENDIF()
@@ -386,7 +387,8 @@ IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
                              PRIVATE "${SQLite3_INCLUDE_DIRS}")
   TARGET_LINK_LIBRARIES(apr_dbd_sqlite3-1
                         PRIVATE libaprutil-1 apr::libapr-1 ${SQLite3_LIBRARIES})
-  SET_PROPERTY(TARGET apr_dbd_sqlite3-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_sqlite3_driver)
+  TARGET_LINK_OPTIONS(apr_dbd_sqlite3-1
+                      PRIVATE "/export:apr_dbd_sqlite3_driver")
   TARGET_COMPILE_DEFINITIONS(apr_dbd_sqlite3-1
                              PRIVATE "DLL_NAME=apr_dbd_sqlite3-1")
 ENDIF()
