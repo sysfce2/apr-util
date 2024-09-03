@@ -313,8 +313,8 @@ ENDIF()
 # libaprutil-1 is shared, aprutil-1 is static
 IF(APU_BUILD_SHARED)
   ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
-  SET(install_targets ${install_targets} libaprutil-1)
-  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/libaprutil-1.pdb)
+  LIST(APPEND install_targets libaprutil-1)
+  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/libaprutil-1.pdb)
   TARGET_LINK_LIBRARIES(libaprutil-1
                         PRIVATE apr::libapr-1 ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
   TARGET_INCLUDE_DIRECTORIES(libaprutil-1
@@ -326,7 +326,7 @@ ENDIF()
 
 IF(APU_BUILD_STATIC)
   ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
-  SET(install_targets ${install_targets} aprutil-1)
+  LIST(APPEND install_targets aprutil-1)
   TARGET_LINK_LIBRARIES(aprutil-1
                         PRIVATE apr::apr-1 ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
   TARGET_INCLUDE_DIRECTORIES(aprutil-1
@@ -341,8 +341,8 @@ IF(APU_DSO_BUILD AND APU_HAVE_CRYPTO)
     MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
   ENDIF()
   ADD_LIBRARY(apr_crypto_openssl-1 SHARED crypto/apr_crypto_openssl.c libaprutil.rc)
-  SET(install_targets ${install_targets} apr_crypto_openssl-1)
-  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_crypto_openssl-1.pdb)
+  LIST(APPEND install_targets apr_crypto_openssl-1)
+  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/apr_crypto_openssl-1.pdb)
   TARGET_INCLUDE_DIRECTORIES(apr_crypto_openssl-1
                              PRIVATE "${OPENSSL_INCLUDE_DIR}")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
@@ -353,9 +353,9 @@ ENDIF()
 
 IF(APU_DSO_BUILD AND APU_HAVE_ODBC)
   ADD_LIBRARY(apr_dbd_odbc-1 SHARED dbd/apr_dbd_odbc.c libaprutil.rc)
-  SET(install_targets ${install_targets} apr_dbd_odbc-1)
-  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_dbd_odbc-1.pdb)
-  SET(dbd_drivers ${dbd_drivers} odbc)
+  LIST(APPEND install_targets apr_dbd_odbc-1)
+  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/apr_dbd_odbc-1.pdb)
+  LIST(APPEND dbd_drivers odbc)
   TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
                         PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
   SET_PROPERTY(TARGET apr_dbd_odbc-1 APPEND PROPERTY LINK_FLAGS /export:apr_dbd_odbc_driver)
@@ -366,8 +366,8 @@ ENDIF()
 IF(APU_DSO_BUILD AND APR_HAS_LDAP)
   ADD_LIBRARY(apr_ldap-1 SHARED ldap/apr_ldap_init.c ldap/apr_ldap_option.c 
               ldap/apr_ldap_rebind.c libaprutil.rc)
-  SET(install_targets ${install_targets} apr_ldap-1)
-  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_ldap-1.pdb)
+  LIST(APPEND install_targets apr_ldap-1)
+  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/apr_ldap-1.pdb)
   TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1
                         PRIVATE apr::libapr-1 ${LDAP_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(apr_ldap-1
@@ -379,9 +379,9 @@ ENDIF()
 
 IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
   ADD_LIBRARY(apr_dbd_sqlite3-1 SHARED dbd/apr_dbd_sqlite3.c libaprutil.rc)
-  SET(install_targets ${install_targets} apr_dbd_sqlite3-1)
-  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/apr_dbd_sqlite3-1.pdb)
-  SET(dbd_drivers ${dbd_drivers} sqlite3)
+  LIST(APPEND install_targets apr_dbd_sqlite3-1)
+  LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/apr_dbd_sqlite3-1.pdb)
+  LIST(APPEND dbd_drivers sqlite3)
   TARGET_INCLUDE_DIRECTORIES(apr_dbd_sqlite3-1
                              PRIVATE "${SQLite3_INCLUDE_DIRS}")
   TARGET_LINK_LIBRARIES(apr_dbd_sqlite3-1
