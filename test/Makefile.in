@@ -20,6 +20,9 @@ TESTS = teststrmatch.lo testuri.lo testuuid.lo testbuckets.lo testpass.lo \
 	testmemcache.lo testcrypto.lo testsiphash.lo testredis.lo \
 	testjson.lo testjose.lo testbuffer.lo
 
+TESTALL_COMPONENTS = \
+	memcachedmock@EXEEXT@
+
 PROGRAMS = $(STDTEST_PORTABLE)
 
 TARGETS = $(PROGRAMS)
