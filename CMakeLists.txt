@@ -273,8 +273,7 @@ IF(NOT APU_DSO_BUILD AND APU_HAVE_CRYPTO)
   ENDIF()
 
   LIST(APPEND APU_EXTRA_SOURCES crypto/apr_crypto_openssl.c)
-  LIST(APPEND APU_EXTRA_LIBRARIES ${OPENSSL_LIBRARIES})
-  LIST(APPEND APU_EXTRA_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
+  LIST(APPEND APU_EXTRA_LIBRARIES OpenSSL::Crypto)
 ENDIF()
 
 IF(NOT APU_DSO_BUILD AND APU_HAVE_ODBC)
@@ -333,12 +332,10 @@ IF(APU_DSO_BUILD AND APU_HAVE_CRYPTO)
   ADD_LIBRARY(apr_crypto_openssl-1 SHARED crypto/apr_crypto_openssl.c libaprutil.rc)
   LIST(APPEND install_targets apr_crypto_openssl-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_crypto_openssl-1>)
-  TARGET_INCLUDE_DIRECTORIES(apr_crypto_openssl-1
-                             PRIVATE "${OPENSSL_INCLUDE_DIR}")
   TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
                              PRIVATE "DLL_NAME=apr_crypto_openssl")
   TARGET_LINK_LIBRARIES(apr_crypto_openssl-1
-                        PRIVATE libaprutil-1 apr::libapr-1 ${OPENSSL_LIBRARIES})
+                        PRIVATE libaprutil-1 apr::libapr-1 OpenSSL::Crypto)
 ENDIF()
 
 IF(APU_DSO_BUILD AND APU_HAVE_ODBC)
