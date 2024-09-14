@@ -31,12 +31,12 @@
         APR_RING_CHECK_CONSISTENCY(&(o)->list, apr_json_value_t, link);                             \
     } while (0)
 
-apr_json_value_t *apr_json_value_create(apr_pool_t *pool)
+APU_DECLARE(apr_json_value_t *) apr_json_value_create(apr_pool_t *pool)
 {
     return apr_pcalloc(pool, sizeof(apr_json_value_t));
 }
 
-apr_json_value_t *apr_json_object_create(apr_pool_t *pool)
+APU_DECLARE(apr_json_value_t *) apr_json_object_create(apr_pool_t *pool)
 {
     apr_json_object_t *object;
 
@@ -50,7 +50,7 @@ apr_json_value_t *apr_json_object_create(apr_pool_t *pool)
     return json;
 }
 
-apr_json_value_t *apr_json_string_create(apr_pool_t *pool, const char *val,
+APU_DECLARE(apr_json_value_t *) apr_json_string_create(apr_pool_t *pool, const char *val,
         apr_ssize_t len) {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -67,7 +67,7 @@ apr_json_value_t *apr_json_string_create(apr_pool_t *pool, const char *val,
     return json;
 }
 
-apr_json_value_t *apr_json_array_create(apr_pool_t *pool, int nelts)
+APU_DECLARE(apr_json_value_t *) apr_json_array_create(apr_pool_t *pool, int nelts)
 {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -82,7 +82,7 @@ apr_json_value_t *apr_json_array_create(apr_pool_t *pool, int nelts)
     return json;
 }
 
-apr_json_value_t *apr_json_long_create(apr_pool_t *pool, apr_int64_t lnumber)
+APU_DECLARE(apr_json_value_t *) apr_json_long_create(apr_pool_t *pool, apr_int64_t lnumber)
 {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -94,7 +94,7 @@ apr_json_value_t *apr_json_long_create(apr_pool_t *pool, apr_int64_t lnumber)
     return json;
 }
 
-apr_json_value_t *apr_json_double_create(apr_pool_t *pool, double dnumber)
+APU_DECLARE(apr_json_value_t *) apr_json_double_create(apr_pool_t *pool, double dnumber)
 {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -106,7 +106,7 @@ apr_json_value_t *apr_json_double_create(apr_pool_t *pool, double dnumber)
     return json;
 }
 
-apr_json_value_t *apr_json_boolean_create(apr_pool_t *pool, int boolean)
+APU_DECLARE(apr_json_value_t *) apr_json_boolean_create(apr_pool_t *pool, int boolean)
 {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -118,7 +118,7 @@ apr_json_value_t *apr_json_boolean_create(apr_pool_t *pool, int boolean)
     return json;
 }
 
-apr_json_value_t *apr_json_null_create(apr_pool_t *pool)
+APU_DECLARE(apr_json_value_t *) apr_json_null_create(apr_pool_t *pool)
 {
     apr_json_value_t *json = apr_json_value_create(pool);
 
@@ -129,7 +129,7 @@ apr_json_value_t *apr_json_null_create(apr_pool_t *pool)
     return json;
 }
 
-apr_status_t apr_json_object_set(apr_json_value_t *object,
+APU_DECLARE(apr_status_t) apr_json_object_set(apr_json_value_t *object,
         const char *key, apr_ssize_t klen, apr_json_value_t *val,
         apr_pool_t *pool)
 {
@@ -170,7 +170,7 @@ apr_status_t apr_json_object_set(apr_json_value_t *object,
     return APR_SUCCESS;
 }
 
-apr_status_t apr_json_object_set_ex(apr_json_value_t *object,
+APU_DECLARE(apr_status_t) apr_json_object_set_ex(apr_json_value_t *object,
         apr_json_value_t *key, apr_json_value_t *val,
         apr_pool_t *pool)
 {
@@ -209,7 +209,7 @@ apr_status_t apr_json_object_set_ex(apr_json_value_t *object,
     return APR_SUCCESS;
 }
 
-apr_json_kv_t *apr_json_object_get(apr_json_value_t *object, const char *key, apr_ssize_t klen)
+APU_DECLARE(apr_json_kv_t *) apr_json_object_get(apr_json_value_t *object, const char *key, apr_ssize_t klen)
 {
     if (object->type != APR_JSON_OBJECT) {
         return NULL;
@@ -218,7 +218,7 @@ apr_json_kv_t *apr_json_object_get(apr_json_value_t *object, const char *key, ap
     return apr_hash_get(object->value.object->hash, key, klen);
 }
 
-apr_json_kv_t *apr_json_object_first(apr_json_value_t *obj)
+APU_DECLARE(apr_json_kv_t *) apr_json_object_first(apr_json_value_t *obj)
 {
     apr_json_kv_t *kv;
 
@@ -236,7 +236,7 @@ apr_json_kv_t *apr_json_object_first(apr_json_value_t *obj)
     }
 }
 
-apr_json_kv_t *apr_json_object_next(apr_json_value_t *obj, apr_json_kv_t *kv)
+APU_DECLARE(apr_json_kv_t *) apr_json_object_next(apr_json_value_t *obj, apr_json_kv_t *kv)
 {
     apr_json_kv_t *next;
 
@@ -254,7 +254,7 @@ apr_json_kv_t *apr_json_object_next(apr_json_value_t *obj, apr_json_kv_t *kv)
     }
 }
 
-apr_status_t apr_json_array_add(apr_json_value_t *arr,
+APU_DECLARE(apr_status_t) apr_json_array_add(apr_json_value_t *arr,
         apr_json_value_t *val)
 {
     apr_array_header_t *array;
@@ -274,7 +274,7 @@ apr_status_t apr_json_array_add(apr_json_value_t *arr,
     return APR_SUCCESS;
 }
 
-apr_json_value_t *apr_json_array_get(apr_json_value_t *arr, int index)
+APU_DECLARE(apr_json_value_t *) apr_json_array_get(apr_json_value_t *arr, int index)
 {
     if (arr->type != APR_JSON_ARRAY) {
         return NULL;
@@ -283,7 +283,7 @@ apr_json_value_t *apr_json_array_get(apr_json_value_t *arr, int index)
     return APR_ARRAY_IDX(arr->value.array->array, index, apr_json_value_t *);
 }
 
-apr_json_value_t *apr_json_array_first(const apr_json_value_t *arr)
+APU_DECLARE(apr_json_value_t *) apr_json_array_first(const apr_json_value_t *arr)
 {
     apr_json_value_t *val;
 
@@ -302,7 +302,7 @@ apr_json_value_t *apr_json_array_first(const apr_json_value_t *arr)
     }
 }
 
-apr_json_value_t *apr_json_array_next(const apr_json_value_t *arr,
+APU_DECLARE(apr_json_value_t *) apr_json_array_next(const apr_json_value_t *arr,
         const apr_json_value_t *val)
 {
     apr_json_value_t *next;
@@ -322,7 +322,7 @@ apr_json_value_t *apr_json_array_next(const apr_json_value_t *arr,
     }
 }
 
-apr_json_value_t *apr_json_overlay(apr_pool_t *p,
+APU_DECLARE(apr_json_value_t *) apr_json_overlay(apr_pool_t *p,
         apr_json_value_t *overlay, apr_json_value_t *base,
         int flags)
 {
