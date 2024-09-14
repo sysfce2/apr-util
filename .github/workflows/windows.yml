@@ -67,7 +67,7 @@ jobs:
               -DAPU_HAVE_CRYPTO=ON
           - name: Static
             os: windows-latest
-            triplet: x64-windows
+            triplet: x64-windows-static
             arch: x64
             build-type: Debug
             generator: Ninja
