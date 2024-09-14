@@ -777,7 +777,7 @@ static apr_status_t apr_json_decode_value(apr_json_scanner_t * self, apr_json_va
     return status;
 }
 
-apr_status_t apr_json_decode(apr_json_value_t ** retval, const char *injson,
+APU_DECLARE(apr_status_t) apr_json_decode(apr_json_value_t ** retval, const char *injson,
         apr_ssize_t injson_size, apr_off_t * offset, int flags, int level,
         apr_pool_t * pool)
 {
@@ -807,7 +807,7 @@ apr_status_t apr_json_decode(apr_json_value_t ** retval, const char *injson,
 
 #else
 /* we do not yet support JSON on EBCDIC platforms, but will do in future */
-apr_status_t apr_json_decode(apr_json_value_t ** retval, const char *injson,
+APU_DECLARE(apr_status_t) apr_json_decode(apr_json_value_t ** retval, const char *injson,
         apr_size_t injson_size, apr_pool_t * pool)
 {
     return APR_ENOTIMPL;

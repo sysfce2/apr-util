@@ -671,7 +671,7 @@ static apr_status_t apr_jose_encode_json_jws(apr_bucket_brigade *brigade,
     return status;
 }
 
-apr_status_t apr_jose_encode(apr_bucket_brigade *brigade,
+APU_DECLARE(apr_status_t) apr_jose_encode(apr_bucket_brigade *brigade,
         apr_brigade_flush flush, void *ctx, apr_jose_t *jose, apr_jose_cb_t *cb,
         apr_pool_t *pool)
 {
