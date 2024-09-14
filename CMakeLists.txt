@@ -55,10 +55,6 @@ OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
 OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"                      OFF)
-SET(LIBXML2_ICONV_INCLUDE_DIR   ""
-    CACHE STRING "Directory with iconv include files for libxml2")
-SET(LIBXML2_ICONV_LIBRARIES     ""
-    CACHE STRING "iconv libraries to link with for libxml2")
 
 SET(APU_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
 SET(APU_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
@@ -113,8 +109,8 @@ IF(APU_USE_EXPAT)
   SET(XMLLIB_INCLUDE_DIR ${EXPAT_INCLUDE_DIRS})
   SET(XMLLIB_LIBRARIES   ${EXPAT_LIBRARIES})
 ELSE()
-  SET(XMLLIB_INCLUDE_DIR "${LIBXML2_INCLUDE_DIR};${LIBXML2_ICONV_INCLUDE_DIR}")
-  SET(XMLLIB_LIBRARIES   "${LIBXML2_LIBRARIES};${LIBXML2_ICONV_LIBRARIES}")
+  SET(XMLLIB_INCLUDE_DIR)
+  SET(XMLLIB_LIBRARIES   LibXml2::LibXml2)
 ENDIF()
 
 
