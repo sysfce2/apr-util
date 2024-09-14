@@ -20,6 +20,7 @@ jobs:
             generator: Ninja
             build-shared: ON
             dso-build: ON
+            packages: expat
           - name: Shared (no DSO)
             os: windows-latest
             triplet: x64-windows
@@ -28,6 +29,33 @@ jobs:
             generator: Ninja
             build-shared: ON
             dso-build: OFF
+            packages: expat
+          - name: Minimal
+            os: windows-latest
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator: Ninja
+            build-shared: ON
+            dso-build: OFF
+            packages: expat
+            config: >-
+              -DAPU_HAVE_ODBC=OFF
+              -DAPU_HAVE_SQLITE3=OFF
+              -DAPU_HAVE_CRYPTO=OFF
+          - name: ODBC + SQLITE3 + CRYPTO
+            os: windows-latest
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator: Ninja
+            build-shared: ON
+            dso-build: OFF
+            packages: expat sqlite3 openssl
+            config: >-
+              -DAPU_HAVE_ODBC=ON
+              -DAPU_HAVE_SQLITE3=ON
+              -DAPU_HAVE_CRYPTO=ON
           - name: Static
             os: windows-latest
             triplet: x64-windows
@@ -36,6 +64,7 @@ jobs:
             generator: Ninja
             build-shared: OFF
             dso-build: OFF
+            packages: expat
       fail-fast: false
 
     name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] build-shared=${{ matrix.build-shared }} on ${{ matrix.os }}"
@@ -56,7 +85,7 @@ jobs:
               core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     - name: Install dependencies
-      run: vcpkg install --triplet ${{ matrix.triplet }} expat
+      run: vcpkg install --triplet ${{ matrix.triplet }} ${{ matrix.packages }}
 
     - uses: actions/checkout@v4
       with:
@@ -104,7 +133,8 @@ jobs:
           -DAPR_BUILD_TESTAPR=ON ^
           -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
-          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install ^
+          ${{ matrix.config }}
 
     - name: Build
       # Build your program with the given configuration
