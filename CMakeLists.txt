@@ -30,22 +30,9 @@ IF(POLICY CMP0091)
 ENDIF()
 
 FIND_PACKAGE(APR REQUIRED)
-FIND_PACKAGE(expat CONFIG)
-FIND_PACKAGE(LibXml2)
-FIND_PACKAGE(OpenSSL)
-FIND_PACKAGE(SQLite3)
 
-IF(NOT EXPAT_FOUND AND NOT LIBXML2_FOUND)
-  MESSAGE(FATAL_ERROR "Either Expat or LibXml2 is required, but neither was found")
-ENDIF()
-
-IF(EXPAT_FOUND)
-  OPTION(APU_USE_EXPAT      "Use Expat"                    ON)
-  OPTION(APU_USE_LIBXML2    "Use LibXml2"                  OFF)
-ELSE()
-  OPTION(APU_USE_EXPAT      "Use Expat"                    OFF)
-  OPTION(APU_USE_LIBXML2    "Use LibXml2"                  ON)
-ENDIF()
+OPTION(APU_USE_EXPAT      "Use Expat"                    ON)
+OPTION(APU_USE_LIBXML2    "Use LibXml2"                  OFF)
 
 OPTION(BUILD_SHARED_LIBS    "Build using shared libraries"              ON)
 CMAKE_DEPENDENT_OPTION(APU_DSO_BUILD "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
@@ -71,16 +58,20 @@ IF(APU_DSO_BUILD AND NOT BUILD_SHARED_LIBS)
   MESSAGE(FATAL_ERROR "APU_DSO_BUILD requires APU_BUILD_SHARED.")
 ENDIF()
 
-IF(APU_HAVE_CRYPTO)
-IF(NOT OPENSSL_FOUND)
-  MESSAGE(FATAL_ERROR "OpenSSL is the only supported crypto implementation, and it wasn't found!")
+IF(APU_USE_EXPAT)
+  FIND_PACKAGE(expat CONFIG REQUIRED)
 ENDIF()
+
+IF(APU_USE_LIBXML2)
+  FIND_PACKAGE(LibXml2 REQUIRED)
+ENDIF()
+
+IF(APU_HAVE_CRYPTO)
+  FIND_PACKAGE(OpenSSL REQUIRED)
 ENDIF()
 
 IF(APU_HAVE_SQLITE3)
-IF(NOT SQLite3_FOUND)
-  MESSAGE(FATAL_ERROR "SQLite3 wasn't found!")
-ENDIF()
+  FIND_PACKAGE(SQLite3 REQUIRED)
 ENDIF()
 
 # create 1-or-0 representation of feature tests for apu.h
