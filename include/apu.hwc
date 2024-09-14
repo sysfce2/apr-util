@@ -102,6 +102,8 @@
 #define APU_MODULE_DECLARE_DATA           __declspec(dllexport)
 #endif
 
+#cmakedefine01 APU_DSO_BUILD
+
 /*
  * we always have SDBM (it's in our codebase)
  */

@@ -83,7 +83,6 @@ jobs:
           -S ${{github.workspace}}/apu ^
           -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} ^
           -DAPR_BUILD_TESTAPR=ON ^
-          -DTEST_STATIC_LIBS=${{ matrix.test-static }} ^
           -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install

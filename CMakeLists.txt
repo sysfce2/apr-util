@@ -21,6 +21,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 PROJECT(APR-Util C)
 
+INCLUDE(CMakeDependentOption)
+
 # Enable support for MSVC runtime library selection by abstraction
 # if supported by CMake.
 IF(POLICY CMP0091)
@@ -45,28 +47,18 @@ ELSE()
   OPTION(APU_USE_LIBXML2    "Use LibXml2"                  ON)
 ENDIF()
 
-OPTION(APU_BUILD_SHARED     "Build shared libraries"                    ON)
-OPTION(APU_BUILD_STATIC     "Build static libraries"                    ON)
-OPTION(APU_DSO_BUILD        "Use DSO build of modular components"       ON)
+OPTION(BUILD_SHARED_LIBS    "Build using shared libraries"              ON)
+CMAKE_DEPENDENT_OPTION(APU_DSO_BUILD "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
 OPTION(APU_HAVE_CRYPTO      "Crypto support"                            OFF)
 OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
 OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"                      OFF)
-OPTION(TEST_STATIC_LIBS     "Test programs use APR static libraries instead of shared libraries?" OFF)
 SET(LIBXML2_ICONV_INCLUDE_DIR   ""
     CACHE STRING "Directory with iconv include files for libxml2")
 SET(LIBXML2_ICONV_LIBRARIES     ""
     CACHE STRING "iconv libraries to link with for libxml2")
-
-IF(NOT APU_BUILD_SHARED AND NOT APU_BUILD_STATIC)
-  MESSAGE(FATAL_ERROR "Both APU_BUILD_SHARED and APU_BUILD_STATIC have been disabled")
-ENDIF()
-
-IF(NOT APU_BUILD_STATIC AND TEST_STATIC_LIBS)
-  MESSAGE(FATAL_ERROR "APU_BUILD_STATIC have been disabled, but TEST_STATIC_LIBS is enabled")
-ENDIF()
 
 IF(NOT APU_USE_EXPAT AND NOT APU_USE_LIBXML2)
   MESSAGE(FATAL_ERROR "Either Expat or LibXml2 must be selected")
@@ -75,7 +67,7 @@ IF(APU_USE_EXPAT AND APU_USE_LIBXML2)
   MESSAGE(FATAL_ERROR "Only one of Expat and LibXml2 can be selected")
 ENDIF()
 
-IF(APU_DSO_BUILD AND NOT APU_BUILD_SHARED)
+IF(APU_DSO_BUILD AND NOT BUILD_SHARED_LIBS)
   MESSAGE(FATAL_ERROR "APU_DSO_BUILD requires APU_BUILD_SHARED.")
 ENDIF()
 
@@ -311,7 +303,7 @@ IF(NOT APU_DSO_BUILD AND APU_HAVE_SQLITE3)
 ENDIF()
 
 # libaprutil-1 is shared, aprutil-1 is static
-IF(APU_BUILD_SHARED)
+IF(BUILD_SHARED_LIBS)
   ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
   LIST(APPEND install_targets libaprutil-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:libaprutil-1>)
@@ -322,9 +314,7 @@ IF(APU_BUILD_SHARED)
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
                              PRIVATE "APU_DECLARE_EXPORT;XML_STATIC"
                              INTERFACE "APU_DECLARE_IMPORT")
-ENDIF()
-
-IF(APU_BUILD_STATIC)
+ELSE()
   ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
   LIST(APPEND install_targets aprutil-1)
   TARGET_LINK_LIBRARIES(aprutil-1
@@ -401,10 +391,10 @@ IF(APR_BUILD_TESTAPR)
                   ${PROJECT_SOURCE_DIR}/test/data/billion-laughs.xml
                   ${PROJECT_BINARY_DIR}/data/billion-laughs.xml)
 
-  IF(TEST_STATIC_LIBS)
-    SET(whichapr    "apr::apr-1;aprutil-1")
-  ELSE()
+  IF(BUILD_SHARED_LIBS)
     SET(whichapr    "apr::libapr-1;libaprutil-1")
+  ELSE()
+    SET(whichapr    "apr::apr-1;aprutil-1")
   ENDIF()
 
   SET (APR_TEST_SOURCES
@@ -460,8 +450,7 @@ MESSAGE(STATUS "")
 MESSAGE(STATUS "APR-Util configuration summary:")
 MESSAGE(STATUS "")
 MESSAGE(STATUS "  Build type ...................... : ${CMAKE_BUILD_TYPE}")
-MESSAGE(STATUS "  Build shared libs ............... : ${APU_BUILD_SHARED}")
-MESSAGE(STATUS "  Build static libs ............... : ${APU_BUILD_STATIC}")
+MESSAGE(STATUS "  Build shared libs ............... : ${BUILD_SHARED_LIBS}")
 MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
 MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
@@ -472,8 +461,3 @@ MESSAGE(STATUS "  APR_HAS_LDAP .................... : ${APR_HAS_LDAP}")
 MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
 MESSAGE(STATUS "  Use LibXml2 ..................... : ${APU_USE_LIBXML2}")
 MESSAGE(STATUS "  Build test suite ................ : ${APR_BUILD_TESTAPR}")
-IF(TEST_STATIC_LIBS)
-MESSAGE(STATUS "    (testing static libraries)")
-ELSE()
-MESSAGE(STATUS "    (testing dynamic libraries)")
-ENDIF()
