@@ -79,7 +79,7 @@ How to build
                               Default: OFF
        APU_HAVE_ODBC          Build ODBC DBD driver
                               Default: ON
-       APR_BUILD_TESTAPR      Build APR-Util test suite
+       APU_BUILD_TEST         Build APR-Util test suite
                               Default: OFF
        TEST_STATIC_LIBS       Build the test suite to test the APR static
                               library instead of the APR dynamic library.

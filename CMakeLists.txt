@@ -41,7 +41,7 @@ OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
 OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
-OPTION(APR_BUILD_TESTAPR    "Build the test suite"                      OFF)
+OPTION(APU_BUILD_TEST       "Build the test suite"                      OFF)
 
 SET(APU_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
 SET(APU_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
@@ -379,7 +379,7 @@ IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
                              PRIVATE "DLL_NAME=apr_dbd_sqlite3-1")
 ENDIF()
 
-IF(APR_BUILD_TESTAPR)
+IF(APU_BUILD_TEST)
   ENABLE_TESTING()
   # Create a "check" target that displays test program output to the console.
   ADD_CUSTOM_TARGET(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
@@ -426,7 +426,7 @@ IF(APR_BUILD_TESTAPR)
   TARGET_LINK_LIBRARIES(memcachedmock ${whichapr})
 
   ADD_DEPENDENCIES(testall memcachedmock)
-ENDIF (APR_BUILD_TESTAPR)
+ENDIF (APU_BUILD_TEST)
 
 # Installation
 
@@ -464,4 +464,4 @@ MESSAGE(STATUS "  APU_HAVE_CRYPTO ................. : ${APU_HAVE_CRYPTO}")
 MESSAGE(STATUS "  APR_HAS_LDAP .................... : ${APR_HAS_LDAP}")
 MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
 MESSAGE(STATUS "  Use LibXml2 ..................... : ${APU_USE_LIBXML2}")
-MESSAGE(STATUS "  Build test suite ................ : ${APR_BUILD_TESTAPR}")
+MESSAGE(STATUS "  Build test suite ................ : ${APU_BUILD_TEST}")
