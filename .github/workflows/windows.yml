@@ -18,10 +18,17 @@ jobs:
             arch: x64
             build-type: Debug
             generator: Ninja
-            test-static: OFF
+            build-shared: ON
+          - name: Static
+            os: windows-latest
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator: Ninja
+            build-shared: OFF
       fail-fast: false
     
-    name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] test-static=${{ matrix.test-static }} on ${{ matrix.os }}"
+    name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] build-shared=${{ matrix.build-shared }} on ${{ matrix.os }}"
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -82,6 +89,7 @@ jobs:
           -B ${{github.workspace}}/apu/build ^
           -S ${{github.workspace}}/apu ^
           -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} ^
+          -DBUILD_SHARED_LIBS=${{ matrix.build-shared }} ^
           -DAPR_BUILD_TESTAPR=ON ^
           -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
