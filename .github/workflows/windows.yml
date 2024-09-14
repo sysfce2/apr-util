@@ -27,7 +27,7 @@ jobs:
             generator: Ninja
             build-shared: OFF
       fail-fast: false
-    
+
     name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] build-shared=${{ matrix.build-shared }} on ${{ matrix.os }}"
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
