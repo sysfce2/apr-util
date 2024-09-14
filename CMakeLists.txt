@@ -302,27 +302,30 @@ IF(NOT APU_DSO_BUILD AND APU_HAVE_SQLITE3)
   LIST(APPEND APU_EXTRA_LIBRARIES ${SQLite3_LIBRARIES})
 ENDIF()
 
-# libaprutil-1 is shared, aprutil-1 is static
+ADD_LIBRARY(libaprutil-1 ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
+LIST(APPEND install_targets libaprutil-1)
+TARGET_LINK_LIBRARIES(libaprutil-1
+                      PRIVATE ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
+TARGET_INCLUDE_DIRECTORIES(libaprutil-1
+                           PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
+TARGET_COMPILE_DEFINITIONS(libaprutil-1
+                           PRIVATE "XML_STATIC")
+
 IF(BUILD_SHARED_LIBS)
-  ADD_LIBRARY(libaprutil-1 SHARED ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libaprutil.rc)
-  LIST(APPEND install_targets libaprutil-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:libaprutil-1>)
+  TARGET_SOURCES(libaprutil-1 PRIVATE libaprutil.rc)
   TARGET_LINK_LIBRARIES(libaprutil-1
-                        PRIVATE apr::libapr-1 ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
-  TARGET_INCLUDE_DIRECTORIES(libaprutil-1
-                             PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
+                        PRIVATE apr::libapr-1)
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
-                             PRIVATE "APU_DECLARE_EXPORT;XML_STATIC"
+                             PRIVATE "APU_DECLARE_EXPORT"
                              INTERFACE "APU_DECLARE_IMPORT")
 ELSE()
-  ADD_LIBRARY(aprutil-1 STATIC ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets aprutil-1)
-  TARGET_LINK_LIBRARIES(aprutil-1
-                        PRIVATE apr::apr-1 ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
-  TARGET_INCLUDE_DIRECTORIES(aprutil-1
-                             PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
-  TARGET_COMPILE_DEFINITIONS(aprutil-1
-                             PRIVATE "APU_DECLARE_STATIC;XML_STATIC"
+  SET_TARGET_PROPERTIES(libaprutil-1 PROPERTIES
+                        OUTPUT_NAME aprutil-1)
+  TARGET_LINK_LIBRARIES(libaprutil-1
+                        PRIVATE apr::apr-1)
+  TARGET_COMPILE_DEFINITIONS(libaprutil-1
+                             PRIVATE "APU_DECLARE_STATIC"
                              INTERFACE "APU_DECLARE_STATIC")
 ENDIF()
 
@@ -394,7 +397,7 @@ IF(APR_BUILD_TESTAPR)
   IF(BUILD_SHARED_LIBS)
     SET(whichapr    "apr::libapr-1;libaprutil-1")
   ELSE()
-    SET(whichapr    "apr::apr-1;aprutil-1")
+    SET(whichapr    "apr::apr-1;libaprutil-1")
   ENDIF()
 
   SET (APR_TEST_SOURCES
