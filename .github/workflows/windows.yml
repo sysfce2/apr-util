@@ -21,6 +21,15 @@ jobs:
             build-shared: ON
             dso-build: ON
             packages: expat
+          - name: Default x86
+            os: windows-latest
+            triplet: x86-windows
+            arch: x86
+            build-type: Debug
+            generator: Ninja
+            build-shared: ON
+            dso-build: ON
+            packages: expat
           - name: Use Libxml2
             os: windows-latest
             triplet: x64-windows
