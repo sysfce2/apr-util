@@ -19,6 +19,15 @@ jobs:
             build-type: Debug
             generator: Ninja
             build-shared: ON
+            dso-build: ON
+          - name: Shared (no DSO)
+            os: windows-latest
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator: Ninja
+            build-shared: ON
+            dso-build: OFF
           - name: Static
             os: windows-latest
             triplet: x64-windows
@@ -26,6 +35,7 @@ jobs:
             build-type: Debug
             generator: Ninja
             build-shared: OFF
+            dso-build: OFF
       fail-fast: false
 
     name: "MSVC ${{ matrix.arch }} [${{ matrix.build-type }}] build-shared=${{ matrix.build-shared }} on ${{ matrix.os }}"
@@ -90,6 +100,7 @@ jobs:
           -S ${{github.workspace}}/apu ^
           -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} ^
           -DBUILD_SHARED_LIBS=${{ matrix.build-shared }} ^
+          -DAPU_DSO_BUILD=${{ matrix.dso-build }} ^
           -DAPR_BUILD_TESTAPR=ON ^
           -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
