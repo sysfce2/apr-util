@@ -297,8 +297,6 @@ TARGET_LINK_LIBRARIES(libaprutil-1
                       PRIVATE ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
 TARGET_INCLUDE_DIRECTORIES(libaprutil-1
                            PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
-TARGET_COMPILE_DEFINITIONS(libaprutil-1
-                           PRIVATE "XML_STATIC")
 
 IF(BUILD_SHARED_LIBS)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:libaprutil-1>)
