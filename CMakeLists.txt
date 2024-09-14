@@ -287,7 +287,7 @@ IF(NOT APU_DSO_BUILD AND APU_HAVE_SQLITE3)
   LIST(APPEND dbd_drivers sqlite3)
 
   LIST(APPEND APU_EXTRA_SOURCES dbd/apr_dbd_sqlite3.c)
-  LIST(APPEND APU_EXTRA_LIBRARIES ${SQLite3_LIBRARIES})
+  LIST(APPEND APU_EXTRA_LIBRARIES SQLite::SQLite3)
 ENDIF()
 
 ADD_LIBRARY(libaprutil-1 ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
@@ -368,10 +368,9 @@ IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
   LIST(APPEND install_targets apr_dbd_sqlite3-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_dbd_sqlite3-1>)
   LIST(APPEND dbd_drivers sqlite3)
-  TARGET_INCLUDE_DIRECTORIES(apr_dbd_sqlite3-1
-                             PRIVATE "${SQLite3_INCLUDE_DIRS}")
+  TARGET_INCLUDE_DIRECTORIES(apr_dbd_sqlite3-1)
   TARGET_LINK_LIBRARIES(apr_dbd_sqlite3-1
-                        PRIVATE libaprutil-1 apr::libapr-1 ${SQLite3_LIBRARIES})
+                        PRIVATE libaprutil-1 apr::libapr-1 SQLite::SQLite3)
   TARGET_COMPILE_DEFINITIONS(apr_dbd_sqlite3-1
                              PRIVATE "DLL_NAME=apr_dbd_sqlite3-1")
 ENDIF()
