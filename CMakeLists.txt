@@ -60,6 +60,10 @@ SET(LIBXML2_ICONV_INCLUDE_DIR   ""
 SET(LIBXML2_ICONV_LIBRARIES     ""
     CACHE STRING "iconv libraries to link with for libxml2")
 
+SET(APU_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
+SET(APU_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
+SET(APU_INSTALL_INCLUDE_DIR  "include"                   CACHE STRING "Install subdirectory for include files")
+
 IF(NOT APU_USE_EXPAT AND NOT APU_USE_LIBXML2)
   MESSAGE(FATAL_ERROR "Either Expat or LibXml2 must be selected")
 ENDIF()
@@ -443,18 +447,18 @@ ENDIF (APR_BUILD_TESTAPR)
 # Installation
 
 INSTALL(TARGETS ${install_targets}
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION ${APU_INSTALL_BIN_DIR}
+        LIBRARY DESTINATION ${APU_INSTALL_LIB_DIR}
+        ARCHIVE DESTINATION ${APU_INSTALL_LIB_DIR}
        )
 
 IF(INSTALL_PDB)
   INSTALL(FILES ${install_bin_pdb}
-          DESTINATION bin
+          DESTINATION ${APU_INSTALL_BIN_DIR}
           CONFIGURATIONS RelWithDebInfo Debug)
 ENDIF()
 
-INSTALL(FILES ${APR_PUBLIC_HEADERS_STATIC} ${APR_PUBLIC_HEADERS_GENERATED} DESTINATION include)
+INSTALL(FILES ${APR_PUBLIC_HEADERS_STATIC} ${APR_PUBLIC_HEADERS_GENERATED} DESTINATION ${APU_INSTALL_INCLUDE_DIR})
 
 STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
 MESSAGE(STATUS "")
@@ -465,6 +469,9 @@ MESSAGE(STATUS "  Build type ...................... : ${CMAKE_BUILD_TYPE}")
 MESSAGE(STATUS "  Build shared libs ............... : ${BUILD_SHARED_LIBS}")
 MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
 MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "    Directory for binary files .... : PREFIX/${APU_INSTALL_BIN_DIR}")
+MESSAGE(STATUS "    Directory for library files ... : PREFIX/${APU_INSTALL_LIB_DIR}")
+MESSAGE(STATUS "    Directory for include files ... : PREFIX/${APU_INSTALL_INCLUDE_DIR}")
 MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
 MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
