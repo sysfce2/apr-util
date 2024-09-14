@@ -111,7 +111,8 @@ jobs:
           -S ${{github.workspace}}/apr ^
           -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
-          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install ^
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
 
     - name: Build APR
       shell: cmd
@@ -143,6 +144,7 @@ jobs:
           -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install ^
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} ^
           ${{ matrix.config }}
 
     - name: Build
