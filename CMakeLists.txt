@@ -331,6 +331,7 @@ IF(BUILD_SHARED_LIBS)
         "${CMAKE_COMMAND}" -E copy_if_different
             $<TARGET_RUNTIME_DLLS:libaprutil-1>
             $<TARGET_FILE_DIR:libaprutil-1>
+      COMMAND_EXPAND_LISTS
   )
 ELSE()
   SET_TARGET_PROPERTIES(libaprutil-1 PROPERTIES
