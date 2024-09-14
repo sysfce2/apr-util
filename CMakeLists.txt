@@ -319,6 +319,15 @@ IF(BUILD_SHARED_LIBS)
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
                              PRIVATE "APU_DECLARE_EXPORT"
                              INTERFACE "APU_DECLARE_IMPORT")
+
+  # Copy libapr-1.dll to BuildDir for test run.
+  ADD_CUSTOM_COMMAND(
+      TARGET libaprutil-1 POST_BUILD
+      COMMAND
+        "${CMAKE_COMMAND}" -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:libaprutil-1>
+            $<TARGET_FILE_DIR:libaprutil-1>
+  )
 ELSE()
   SET_TARGET_PROPERTIES(libaprutil-1 PROPERTIES
                         OUTPUT_NAME aprutil-1)
