@@ -39,7 +39,7 @@ CMAKE_DEPENDENT_OPTION(APU_DSO_BUILD "Use DSO build of modular components" ON "B
 OPTION(APU_HAVE_CRYPTO      "Crypto support"                            OFF)
 OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
-OPTION(APR_HAS_LDAP         "LDAP support"                              ON)
+OPTION(APR_HAS_LDAP         "LDAP support"                              OFF)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
 OPTION(APU_BUILD_TEST       "Build the test suite"                      OFF)
 
