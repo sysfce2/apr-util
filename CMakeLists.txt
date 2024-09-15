@@ -353,8 +353,8 @@ IF(APU_DSO_BUILD AND APR_HAS_LDAP)
               ldap/apr_ldap_rebind.c libaprutil.rc)
   LIST(APPEND install_targets apr_ldap-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_ldap-1>)
-  TARGET_LINK_LIBRARIES(apr_ldap-1 libaprutil-1
-                        PRIVATE apr::libapr-1 ${LDAP_LIBRARIES})
+  TARGET_LINK_LIBRARIES(apr_ldap-1
+                        PRIVATE libaprutil-1 apr::libapr-1 ${LDAP_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(apr_ldap-1
                              PRIVATE "DLL_NAME=apr_ldap")
   SET(apr_ldap_libraries apr_ldap-1)
