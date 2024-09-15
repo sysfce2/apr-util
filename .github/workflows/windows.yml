@@ -87,7 +87,7 @@ jobs:
             dso-build: OFF
             packages: expat
             config: >-
-              -DAPR_HAVE_LDAP=ON
+              -DAPR_HAS_LDAP=ON
               -DAPU_HAVE_SQLITE3=OFF
               -DAPU_HAVE_CRYPTO=OFF
           - name: Static
