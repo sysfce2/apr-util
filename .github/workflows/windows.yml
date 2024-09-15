@@ -77,6 +77,19 @@ jobs:
               -DAPU_HAVE_ODBC=ON
               -DAPU_HAVE_SQLITE3=ON
               -DAPU_HAVE_CRYPTO=ON
+          - name: LDAP
+            os: windows-latest
+            triplet: x64-windows
+            arch: x64
+            build-type: Debug
+            generator: Ninja
+            build-shared: ON
+            dso-build: OFF
+            packages: expat
+            config: >-
+              -DAPR_HAVE_LDAP=ON
+              -DAPU_HAVE_SQLITE3=OFF
+              -DAPU_HAVE_CRYPTO=OFF
           - name: Static
             os: windows-latest
             triplet: x64-windows-static
@@ -153,7 +166,6 @@ jobs:
           -DBUILD_SHARED_LIBS=${{ matrix.build-shared }} ^
           -DAPU_DSO_BUILD=${{ matrix.dso-build }} ^
           -DAPU_BUILD_TEST=ON ^
-          -DAPR_HAS_LDAP=OFF ^
           -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install ^
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} ^
