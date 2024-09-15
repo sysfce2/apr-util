@@ -367,7 +367,6 @@ IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
   LIST(APPEND install_targets apr_dbd_sqlite3-1)
   LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_dbd_sqlite3-1>)
   LIST(APPEND dbd_drivers sqlite3)
-  TARGET_INCLUDE_DIRECTORIES(apr_dbd_sqlite3-1)
   TARGET_LINK_LIBRARIES(apr_dbd_sqlite3-1
                         PRIVATE libaprutil-1 apr::libapr-1 SQLite::SQLite3)
   TARGET_COMPILE_DEFINITIONS(apr_dbd_sqlite3-1
