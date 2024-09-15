@@ -266,27 +266,59 @@ IF (MSVC)
   ADD_COMPILE_DEFINITIONS(_CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS)
 ENDIF()
 
-IF(NOT APU_DSO_BUILD AND APU_HAVE_CRYPTO)
+MACRO(ADD_APU_MODULE name dllname sources libraries)
+  IF(APU_DSO_BUILD)
+    ADD_LIBRARY(${name} SHARED ${sources})
+    LIST(APPEND install_targets ${name})
+    LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:${name}>)
+
+    TARGET_SOURCES(${name} PRIVATE libaprutil.rc)
+    TARGET_COMPILE_DEFINITIONS(${name}
+                               PRIVATE DLL_NAME=${dllname})
+
+    TARGET_LINK_LIBRARIES(${name}
+                          PRIVATE libaprutil-1 apr::libapr-1)
+    TARGET_LINK_LIBRARIES(${name}
+                          PRIVATE ${libraries})
+  ELSE()
+    LIST(APPEND APU_EXTRA_SOURCES ${sources})
+    LIST(APPEND APU_EXTRA_LIBRARIES ${libraries})
+  ENDIF()
+ENDMACRO()
+
+IF(APU_HAVE_CRYPTO)
   IF(NOT OPENSSL_FOUND)
     MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
   ENDIF()
 
-  LIST(APPEND APU_EXTRA_SOURCES crypto/apr_crypto_openssl.c)
-  LIST(APPEND APU_EXTRA_LIBRARIES OpenSSL::Crypto)
+  ADD_APU_MODULE(
+    apr_crypto_openssl-1 "apr_crypto_openssl"
+    "crypto/apr_crypto_openssl.c"
+    "OpenSSL::Crypto")
 ENDIF()
 
-IF(NOT APU_DSO_BUILD AND APU_HAVE_ODBC)
+IF(APR_HAS_LDAP)
+  ADD_APU_MODULE(
+    apr_ldap-1 "apr_ldap"
+    "ldap/apr_ldap_init.c;ldap/apr_ldap_option.c;ldap/apr_ldap_rebind.c"
+    ${LDAP_LIBRARIES}
+  )
+ENDIF()
+
+IF(APU_HAVE_ODBC)
   LIST(APPEND dbd_drivers odbc)
 
-  LIST(APPEND APU_EXTRA_SOURCES dbd/apr_dbd_odbc.c)
-  LIST(APPEND APU_EXTRA_LIBRARIES odbc32 odbccp32)
+  ADD_APU_MODULE(apr_dbd_odbc-1 "apr_dbd_odbc"
+                 "dbd/apr_dbd_odbc.c"
+                 "odbc32;odbccp32")
 ENDIF()
 
-IF(NOT APU_DSO_BUILD AND APU_HAVE_SQLITE3)
+IF(APU_HAVE_SQLITE3)
   LIST(APPEND dbd_drivers sqlite3)
 
-  LIST(APPEND APU_EXTRA_SOURCES dbd/apr_dbd_sqlite3.c)
-  LIST(APPEND APU_EXTRA_LIBRARIES SQLite::SQLite3)
+  ADD_APU_MODULE(apr_dbd_sqlite3-1 "apr_dbd_sqlite3-1"
+                 "dbd/apr_dbd_sqlite3.c"
+                 "SQLite::SQLite3")
 ENDIF()
 
 ADD_LIBRARY(libaprutil-1 ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
@@ -322,55 +354,6 @@ ELSE()
   TARGET_COMPILE_DEFINITIONS(libaprutil-1
                              PRIVATE "APU_DECLARE_STATIC"
                              INTERFACE "APU_DECLARE_STATIC")
-ENDIF()
-
-IF(APU_DSO_BUILD AND APU_HAVE_CRYPTO)
-  IF(NOT OPENSSL_FOUND)
-    MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
-  ENDIF()
-  ADD_LIBRARY(apr_crypto_openssl-1 SHARED crypto/apr_crypto_openssl.c libaprutil.rc)
-  LIST(APPEND install_targets apr_crypto_openssl-1)
-  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_crypto_openssl-1>)
-  TARGET_COMPILE_DEFINITIONS(apr_crypto_openssl-1
-                             PRIVATE "DLL_NAME=apr_crypto_openssl")
-  TARGET_LINK_LIBRARIES(apr_crypto_openssl-1
-                        PRIVATE libaprutil-1 apr::libapr-1 OpenSSL::Crypto)
-ENDIF()
-
-IF(APU_DSO_BUILD AND APU_HAVE_ODBC)
-  ADD_LIBRARY(apr_dbd_odbc-1 SHARED dbd/apr_dbd_odbc.c libaprutil.rc)
-  LIST(APPEND install_targets apr_dbd_odbc-1)
-  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_dbd_odbc-1>)
-  LIST(APPEND dbd_drivers odbc)
-  TARGET_LINK_LIBRARIES(apr_dbd_odbc-1
-                        PRIVATE libaprutil-1 apr::libapr-1 odbc32 odbccp32)
-  TARGET_COMPILE_DEFINITIONS(apr_dbd_odbc-1
-                             PRIVATE "DLL_NAME=apr_dbd_odbc")
-ENDIF()
-
-IF(APU_DSO_BUILD AND APR_HAS_LDAP)
-  ADD_LIBRARY(apr_ldap-1 SHARED ldap/apr_ldap_init.c ldap/apr_ldap_option.c 
-              ldap/apr_ldap_rebind.c libaprutil.rc)
-  LIST(APPEND install_targets apr_ldap-1)
-  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_ldap-1>)
-  TARGET_LINK_LIBRARIES(apr_ldap-1
-                        PRIVATE libaprutil-1 apr::libapr-1 ${LDAP_LIBRARIES})
-  TARGET_COMPILE_DEFINITIONS(apr_ldap-1
-                             PRIVATE "DLL_NAME=apr_ldap")
-  SET(apr_ldap_libraries apr_ldap-1)
-ELSE()
-  SET(apr_ldap_libraries)
-ENDIF()
-
-IF(APU_DSO_BUILD AND APU_HAVE_SQLITE3)
-  ADD_LIBRARY(apr_dbd_sqlite3-1 SHARED dbd/apr_dbd_sqlite3.c libaprutil.rc)
-  LIST(APPEND install_targets apr_dbd_sqlite3-1)
-  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:apr_dbd_sqlite3-1>)
-  LIST(APPEND dbd_drivers sqlite3)
-  TARGET_LINK_LIBRARIES(apr_dbd_sqlite3-1
-                        PRIVATE libaprutil-1 apr::libapr-1 SQLite::SQLite3)
-  TARGET_COMPILE_DEFINITIONS(apr_dbd_sqlite3-1
-                             PRIVATE "DLL_NAME=apr_dbd_sqlite3-1")
 ENDIF()
 
 IF(APU_BUILD_TEST)
