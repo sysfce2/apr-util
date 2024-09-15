@@ -274,7 +274,7 @@ MACRO(ADD_APU_MODULE name dllname sources libraries)
 
     TARGET_SOURCES(${name} PRIVATE libaprutil.rc)
     TARGET_COMPILE_DEFINITIONS(${name}
-                               PRIVATE DLL_NAME=${dllname})
+                               PRIVATE DLL_NAME=${dllname} APU_DSO_MODULE_BUILD)
 
     TARGET_LINK_LIBRARIES(${name}
                           PRIVATE libaprutil-1 apr::libapr-1)
