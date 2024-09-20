@@ -124,7 +124,6 @@
  * Win32 always has odbc (it's always installed)
  */
 #ifndef APU_DSO_MODULE_BUILD
-#define APU_HAVE_PGSQL          0
 #define APU_HAVE_MYSQL          0
 #define APU_HAVE_SQLITE2        0
 #define APU_HAVE_ORACLE         0
@@ -132,6 +131,7 @@
 
 #cmakedefine01 APU_HAVE_ODBC
 #cmakedefine01 APU_HAVE_SQLITE3
+#cmakedefine01 APU_HAVE_PGSQ
 #cmakedefine01 APU_HAVE_CRYPTO
 
 #ifndef APU_DSO_MODULE_BUILD

@@ -79,6 +79,8 @@ How to build
                               Default: OFF
        APU_HAVE_ODBC          Build ODBC DBD driver
                               Default: ON
+       APU_HAVE_PGSQL         Build PostgreSQL DBD driver
+                              Default: OFF
        APU_BUILD_TEST         Build APR-Util test suite
                               Default: OFF
        TEST_STATIC_LIBS       Build the test suite to test the APR static
@@ -114,7 +116,6 @@ Known Bugs and Limitations
     . APU_HAVE_NDBM
     . APU_HAVE_DB
   + DBD:
-    . APU_HAVE_PGSQL
     . APU_HAVE_MYSQL
     . APU_HAVE_SQLITE3
     . APU_HAVE_SQLITE2

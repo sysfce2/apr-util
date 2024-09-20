@@ -39,6 +39,7 @@ CMAKE_DEPENDENT_OPTION(APU_DSO_BUILD "Use DSO build of modular components" ON "B
 OPTION(APU_HAVE_CRYPTO      "Crypto support"                            OFF)
 OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
+OPTION(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"               OFF)
 OPTION(APR_HAS_LDAP         "LDAP support"                              OFF)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"         ON)
 OPTION(APU_BUILD_TEST       "Build the test suite"                      OFF)
@@ -72,6 +73,10 @@ ENDIF()
 
 IF(APU_HAVE_SQLITE3)
   FIND_PACKAGE(SQLite3 REQUIRED)
+ENDIF()
+
+IF(APU_HAVE_PGSQL)
+  FIND_PACKAGE(PostgreSQL REQUIRED)
 ENDIF()
 
 # create 1-or-0 representation of feature tests for apu.h
@@ -321,6 +326,16 @@ IF(APU_HAVE_SQLITE3)
                  "SQLite::SQLite3")
 ENDIF()
 
+IF(APU_HAVE_PGSQL)
+  LIST(APPEND dbd_drivers pgsql)
+
+  ADD_APU_MODULE(apr_dbd_pgsql-2 "apr_dbd_pgsql"
+                 "dbd/apr_dbd_pgsql.c"
+                 "PostgreSQL::PostgreSQL")
+
+  ADD_COMPILE_DEFINITIONS(HAVE_LIBPQ_FE_H)
+ENDIF()
+
 ADD_LIBRARY(libaprutil-1 ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
 LIST(APPEND install_targets libaprutil-1)
 TARGET_LINK_LIBRARIES(libaprutil-1
@@ -437,6 +452,7 @@ MESSAGE(STATUS "    Directory for include files ... : PREFIX/${APU_INSTALL_INCLU
 MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
 MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
+MESSAGE(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
 MESSAGE(STATUS "  APU_HAVE_CRYPTO ................. : ${APU_HAVE_CRYPTO}")
 MESSAGE(STATUS "  APR_HAS_LDAP .................... : ${APR_HAS_LDAP}")
 MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
