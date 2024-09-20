@@ -305,7 +305,7 @@ ENDIF()
 IF(APR_HAS_LDAP)
   ADD_APU_MODULE(
     apr_ldap-1 "apr_ldap"
-    "ldap/apr_ldap_init.c;ldap/apr_ldap_option.c;ldap/apr_ldap_rebind.c"
+    "ldap/apr_ldap_init.c;ldap/apr_ldap_option.c;ldap/apr_ldap_rebind.c;ldap/apr_ldap.c"
     ${LDAP_LIBRARIES}
   )
 ENDIF()
