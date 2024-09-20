@@ -64,7 +64,7 @@ jobs:
               -DAPU_HAVE_ODBC=OFF
               -DAPU_HAVE_SQLITE3=OFF
               -DAPU_HAVE_CRYPTO=OFF
-          - name: ODBC + SQLITE3 + CRYPTO
+          - name: ODBC + SQLITE3 + PGSQL + CRYPTO
             os: windows-latest
             triplet: x64-windows
             arch: x64
@@ -72,10 +72,11 @@ jobs:
             generator: Ninja
             build-shared: ON
             dso-build: OFF
-            packages: expat sqlite3 openssl
+            packages: expat sqlite3 openssl libpq
             config: >-
               -DAPU_HAVE_ODBC=ON
               -DAPU_HAVE_SQLITE3=ON
+              -DAPU_HAVE_PGSQL=ON
               -DAPU_HAVE_CRYPTO=ON
           - name: LDAP
             os: windows-latest
