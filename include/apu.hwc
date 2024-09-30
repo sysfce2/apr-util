@@ -140,7 +140,7 @@
 #endif
 
 #define APU_HAVE_APR_ICONV      @apu_have_apr_iconv_10@
-#define APU_HAVE_ICONV          0
+#cmakedefine01 APU_HAVE_ICONV
 #define APR_HAS_XLATE           (APU_HAVE_APR_ICONV || APU_HAVE_ICONV)
 
 #cmakedefine01 APU_USE_EXPAT

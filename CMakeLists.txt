@@ -37,6 +37,7 @@ OPTION(APU_USE_LIBXML2    "Use LibXml2"                  OFF)
 OPTION(BUILD_SHARED_LIBS    "Build using shared libraries"              ON)
 CMAKE_DEPENDENT_OPTION(APU_DSO_BUILD "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
 OPTION(APU_HAVE_CRYPTO      "Crypto support"                            OFF)
+option(APU_HAVE_ICONV       "Xlate support"                             OFF)
 OPTION(APU_HAVE_ODBC        "Build ODBC DBD driver"                     ON)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"                  OFF)
 OPTION(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"               OFF)
@@ -69,6 +70,10 @@ ENDIF()
 
 IF(APU_HAVE_CRYPTO)
   FIND_PACKAGE(OpenSSL REQUIRED)
+ENDIF()
+
+IF(APU_HAVE_ICONV)
+  FIND_PACKAGE(Iconv REQUIRED)
 ENDIF()
 
 IF(APU_HAVE_SQLITE3)
@@ -107,6 +112,12 @@ ELSE()
   SET(XMLLIB_LIBRARIES   LibXml2::LibXml2)
 ENDIF()
 
+IF(APU_HAVE_ICONV)
+  SET(XLATE_LIBRARIES    Iconv::Iconv)
+  ADD_COMPILE_DEFINITIONS(HAVE_ICONV_H)
+ELSE()
+  SET(XLATE_LIBRARIES   "")
+ENDIF()
 
 # Generated .h files are stored in PROJECT_BINARY_DIR, not the
 # source tree.
@@ -339,7 +350,7 @@ ENDIF()
 ADD_LIBRARY(libaprutil-1 ${APR_SOURCES} ${APU_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
 LIST(APPEND install_targets libaprutil-1)
 TARGET_LINK_LIBRARIES(libaprutil-1
-                      PRIVATE ${XMLLIB_LIBRARIES} ${APU_EXTRA_LIBRARIES})
+                      PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APU_EXTRA_LIBRARIES})
 TARGET_INCLUDE_DIRECTORIES(libaprutil-1
                            PRIVATE ${APU_EXTRA_INCLUDE_DIRECTORIES})
 
@@ -454,6 +465,7 @@ MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
 MESSAGE(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
 MESSAGE(STATUS "  APU_HAVE_CRYPTO ................. : ${APU_HAVE_CRYPTO}")
+MESSAGE(STATUS "  APU_HAVE_ICONV .................. : ${APU_HAVE_ICONV}")
 MESSAGE(STATUS "  APR_HAS_LDAP .................... : ${APR_HAS_LDAP}")
 MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
 MESSAGE(STATUS "  Use LibXml2 ..................... : ${APU_USE_LIBXML2}")
